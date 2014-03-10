@@ -97,7 +97,12 @@ into your **pom.xml**:
 
 1. Download the latest .jar file from here: https://repository-nutiteq.forge.cloudbees.com/snapshot/com/nutiteq/advancedlayers/AdvancedLayers/1.0-SNAPSHOT/
 
-1. Save it to your project libs/ folder. If you use native libraries (for e.g. sqlite, shapefile, geotiff etc) then you need also .so files into libs/armeabi folder. 
+2. Save it to your project libs/ folder. 
+
+3. For other dependencies: 
+
+ * Java libs from extlibs folder (https://github.com/nutiteq/advancedlayers/tree/master/extlibs)
+ * If you use native libraries (for e.g. sqlite, shapefile, geotiff etc) then you need also .so files into libs/armeabi folder 
 
 # Test datasets
 
