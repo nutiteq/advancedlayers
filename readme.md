@@ -6,6 +6,7 @@ If you use maven, then dependent libraries will be downloaded automatically from
 
 ## In Android Studio / Gradle
 
+Into your **build.gradle**
 
     // Make sure you have nutiteq snapshot repository:
 
@@ -29,6 +30,68 @@ If you use maven, then dependent libraries will be downloaded automatically from
         compile "com.nutiteq.advancedlayers:AdvancedLayers:1.0-SNAPSHOT"
     }
 
+
+## Maven (Eclipse)
+
+into your **pom.xml**:
+
+
+                <!-- Advanced layers -->
+		<dependency>
+			<groupId>com.nutiteq.advancedlayers</groupId>
+			<artifactId>AdvancedLayers</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Native (NDK) libraries built by Nutiteq -->
+		<dependency>
+			<groupId>com.nutiteq.advancedlayers</groupId>
+			<artifactId>ogrjni</artifactId>
+			<version>snapshot</version>
+			<classifier>armeabi</classifier>
+			<type>so</type>
+		</dependency>
+
+		<dependency>
+			<groupId>com.nutiteq.advancedlayers</groupId>
+			<artifactId>gdalconstjni</artifactId>
+			<version>snapshot</version>
+			<classifier>armeabi</classifier>
+			<type>so</type>
+		</dependency>
+
+		<dependency>
+			<groupId>com.nutiteq.advancedlayers</groupId>
+			<artifactId>gdaljni</artifactId>
+			<version>snapshot</version>
+			<classifier>armeabi</classifier>
+			<type>so</type>
+		</dependency>
+
+		<dependency>
+			<groupId>com.nutiteq.advancedlayers</groupId>
+			<artifactId>jsqlite</artifactId>
+			<version>snapshot</version>
+			<classifier>armeabi</classifier>
+			<type>so</type>
+		</dependency>
+
+		<dependency>
+			<groupId>com.nutiteq.advancedlayers</groupId>
+			<artifactId>osrjni</artifactId>
+			<version>snapshot</version>
+			<classifier>armeabi</classifier>
+			<type>so</type>
+		</dependency>
+
+		<dependency>
+			<groupId>com.nutiteq.advancedlayers</groupId>
+			<artifactId>proj</artifactId>
+			<version>snapshot</version>
+			<classifier>armeabi</classifier>
+			<type>so</type>
+		</dependency>
 
 # Test datasets
 
