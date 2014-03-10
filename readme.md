@@ -4,6 +4,32 @@
 
 If you use maven, then dependent libraries will be downloaded automatically from Nutiteq repository. Only if you do not use maven for some reason, just copy all *extlibs/* jar files to *libs* folder within the project
 
+## In Android Studio / Gradle
+
+
+    // Make sure you have nutiteq snapshot repository:
+
+    allprojects {
+        repositories {
+            mavenCentral()
+            maven {
+                url "http://repository-nutiteq.forge.cloudbees.com/release/"
+		            }
+            maven {
+                url "http://repository-nutiteq.forge.cloudbees.com/snapshot/"
+                }
+
+        }
+    }
+
+
+    // add advancedlayers dependency:
+    dependencies {
+        compile "com.nutiteq:nutiteq-3d-sdk:2.3.1"
+        compile "com.nutiteq.advancedlayers:AdvancedLayers:1.0-SNAPSHOT"
+    }
+
+
 # Test datasets
 
 Depending on layers you may find useful to copy following files to the sdcard of your device, and modify paths in the code accordingly:
