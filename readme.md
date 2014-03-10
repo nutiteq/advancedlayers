@@ -1,8 +1,6 @@
 # Install dependency JARs
 
- You need dependent JAR files in the project. There are two ways to accomplish this:
-
-If you use maven, then dependent libraries will be downloaded automatically from Nutiteq repository. Only if you do not use maven for some reason, just copy all *extlibs/* jar files to *libs* folder within the project
+You need to include advancedlayers with dependencies to your application project. Depending on your development environment and IDE there are several ways to do it.
 
 ## In Android Studio / Gradle
 
