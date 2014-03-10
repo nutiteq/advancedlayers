@@ -93,6 +93,10 @@ into your **pom.xml**:
 			<type>so</type>
 		</dependency>
 
+## Manual jar file
+
+Take latest .jar file from here: https://repository-nutiteq.forge.cloudbees.com/snapshot/com/nutiteq/advancedlayers/AdvancedLayers/1.0-SNAPSHOT/
+
 # Test datasets
 
 Depending on layers you may find useful to copy following files to the sdcard of your device, and modify paths in the code accordingly:
