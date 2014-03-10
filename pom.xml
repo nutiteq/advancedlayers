@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.nutiteq.advancedlayers</groupId>
+	<artifactId>AdvancedLayers</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>AdvancedLayers</name>
+
+	<properties>
+		<platform.version> 4.1.1.4
+		</platform.version>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>cloudbees-nutiteq-release</id>
+			<name>Nutiteq SDK release repository</name>
+			<url>http://repository-nutiteq.forge.cloudbees.com/release/</url>
+		</repository>
+		<repository>
+		    <snapshots>
+        		<enabled>true</enabled>
+        		<updatePolicy>always</updatePolicy>
+    		</snapshots>
+			<id>cloudbees-nutiteq-snapshot</id>
+			<name>Nutiteq SDK snapshot repository</name>
+			<url>http://repository-nutiteq.forge.cloudbees.com/snapshot/</url>
+		</repository>
+	</repositories>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>android</artifactId>
+			<version>${platform.version}</version>
+			<scope>provided</scope>
+		</dependency>
+	    <!--  Gson: Java to Json conversion -->
+	    <dependency>
+	      <groupId>com.google.code.gson</groupId> 
+	      <artifactId>gson</artifactId>
+	      <version>2.2.3</version>
+	      <scope>compile</scope>
+	    </dependency>
+   		<dependency>
+			<groupId>com.nutiteq</groupId>
+			<artifactId>nutiteq-3d-sdk</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jhlabs</groupId>
+			<artifactId>javaproj-noawt</artifactId>
+			<version>1.0.7</version>
+		</dependency>
+  		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>2.4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mapsforge.android</groupId>
+			<artifactId>mapsforge-map</artifactId>
+			<version>0.3.1</version>
+		</dependency> 
+		<dependency>
+			<groupId>com.samskivert</groupId>
+			<artifactId>jmustache</artifactId>
+			<version>1.5</version>
+		</dependency> 
+		<dependency>
+            <groupId>com.graphhopper</groupId>
+            <artifactId>graphhopper</artifactId>
+            <version>0.1.1</version>            
+            <type>jar</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>                    
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.protobuf</groupId>
+                    <artifactId>protobuf-java</artifactId>                    
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>                    
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+		<!-- needed for OSM roofs -->
+		<dependency>
+			<groupId>com.vividsolutions</groupId>
+			<artifactId>jts</artifactId>
+			<version>1.13</version>
+		</dependency>
+
+		
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+				<artifactId>android-maven-plugin</artifactId>
+				<version>3.6.0</version>
+				<configuration>
+					<androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
+					<assetsDirectory>${project.basedir}/assets</assetsDirectory>
+					<resourceDirectory>${project.basedir}/res</resourceDirectory>
+					<nativeLibrariesDirectory>${project.basedir}/libs</nativeLibrariesDirectory>
+					<sdk>
+						<platform>16</platform>
+					</sdk>
+					<undeployBeforeDeploy>true</undeployBeforeDeploy>
+					<downloadJavadocs>true</downloadJavadocs>
+				</configuration>
+				<extensions>true</extensions> 
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.mysema.maven</groupId>
+				<artifactId>maven-version-plugin</artifactId>
+				<version>0.1.0</version>
+			</plugin> 
+		</plugins>
+		<extensions>
+            <!-- Extension required to deploy a snapshot or a release to the CloudBees remote maven repository using Webdav -->
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav</artifactId>
+                <version>1.0-beta-2</version>
+            </extension>
+        </extensions>
+		
+	</build>
+</project>

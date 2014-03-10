@@ -28,3 +28,7 @@ proguard/
 *.ipr
 *.iws
 .idea/
+obj
+target
+.settings
+**/.svn/**
