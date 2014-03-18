@@ -1,6 +1,16 @@
-# Install dependency JARs
+# About
 
-You need to include advancedlayers with dependencies to your application project. Depending on your development environment and IDE there are several ways to do it.
+This is a set of free and open source map layer and data source implementations in top of Nutiteq Maps SDK http://www.nutiteq.com. You can use it as a ready-made library, or modify sources according to your needs. License: MIT
+
+# Getting started
+
+ * Guides: https://github.com/nutiteq/hellomap3d/wiki for guides. 
+ * Sample app code: https://github.com/nutiteq/hellomap3d/tree/master/AdvancedMap3D
+ * Running AdvancedMap3D sample app: https://github.com/nutiteq/hellomap3d/wiki/Get-advancedmap3d-to-start 
+
+# Usage in your app
+
+To use the library in your app you need to include AdvancedLayers and external dependencies to your project. Depending on your development environment and IDE there are several ways to do it.
 
 ## In Android Studio / Gradle
 
@@ -31,10 +41,34 @@ Into your **build.gradle**
 
 ## Maven (Eclipse)
 
-into your **pom.xml**:
+Add to your **pom.xml** (full sample: https://github.com/nutiteq/hellomap3d/blob/master/AdvancedMap3D/pom.xml):
 
+	<repositories>
+		<repository>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+			<id>cloudbees-nutiteq-snapshot</id>
+			<name>Nutiteq SDK snapshot repository</name>
+			<url>http://repository-nutiteq.forge.cloudbees.com/snapshot/</url>
+		</repository>
+		<repository>
+			<id>cloudbees-nutiteq-release</id>
+			<name>Nutiteq SDK release repository</name>
+			<url>http://repository-nutiteq.forge.cloudbees.com/release/</url>
+		</repository>
+	</repositories>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>android</artifactId>
+			<version>${platform.version}</version>
+			<scope>provided</scope>
+		</dependency>
 
-                <!-- Advanced layers -->
+		<!-- Advanced layers and Nutiteq SDK -->
 		<dependency>
 			<groupId>com.nutiteq.advancedlayers</groupId>
 			<artifactId>AdvancedLayers</artifactId>
@@ -93,14 +127,14 @@ into your **pom.xml**:
 
 ## Manual jar file
 
-1. Download the latest .jar file from here: https://repository-nutiteq.forge.cloudbees.com/snapshot/com/nutiteq/advancedlayers/AdvancedLayers/1.0-SNAPSHOT/
+1. Download the latest .jar file from https://github.com/nutiteq/hellomap3d/blob/master/AdvancedMap3D/extlibs/AdvancedLayers-1.0-SNAPSHOT.jar and latest Nutiteq SDK jar file from https://github.com/nutiteq/hellomap3d/wiki/Downloads
 
-2. Save it to your project libs/ folder. 
+2. Save them to your project libs/ folder. 
 
 3. For other dependencies: 
 
  * Java libs from extlibs folder (https://github.com/nutiteq/advancedlayers/tree/master/extlibs)
- * If you use native libraries (for e.g. sqlite, shapefile, geotiff etc) then you need also .so files into libs/armeabi folder 
+ * If you use native libraries (for e.g. sqlite, shapefile, geotiff etc) then you need also .so files from same location, usually armeabi/ folder is enough.
 
 # Test datasets
 
