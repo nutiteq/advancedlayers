@@ -127,7 +127,9 @@ Add to your **pom.xml** (full sample: https://github.com/nutiteq/hellomap3d/blob
 
 ## Manual jar file
 
-1. Download the latest .jar file from https://github.com/nutiteq/hellomap3d/blob/master/AdvancedMap3D/extlibs/AdvancedLayers-1.0-SNAPSHOT.jar and latest Nutiteq SDK jar file from https://github.com/nutiteq/hellomap3d/wiki/Downloads
+1. Download Nutiteq code:
+  * Latest .jar file from https://github.com/nutiteq/hellomap3d/blob/master/AdvancedMap3D/extlibs/AdvancedLayers-1.0-SNAPSHOT.jar 
+  * Latest Nutiteq SDK jar file from https://github.com/nutiteq/hellomap3d/wiki/Downloads
 
 2. Save them to your project libs/ folder. 
 
