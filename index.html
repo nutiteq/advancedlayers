@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Advancedlayers : Advanced Layers for Nutiteq Maps SDK" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Advancedlayers</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/nutiteq/advancedlayers">View on GitHub</a>
+
+          <h1 id="project_title">Advancedlayers</h1>
+          <h2 id="project_tagline">Advanced Layers for Nutiteq Maps SDK</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/nutiteq/advancedlayers/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/nutiteq/advancedlayers/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="about" class="anchor" href="#about"><span class="octicon octicon-link"></span></a>About</h1>
+
+<p>This is a set of free and open source map layer and data source implementations in top of Nutiteq Maps SDK <a href="http://www.nutiteq.com">http://www.nutiteq.com</a>. You can use it as a ready-made library, or modify sources according to your needs. License: MIT</p>
+
+<h1>
+<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h1>
+
+<ul>
+<li>Guides: <a href="https://github.com/nutiteq/hellomap3d/wiki">https://github.com/nutiteq/hellomap3d/wiki</a> for guides. </li>
+<li>Sample app code: <a href="https://github.com/nutiteq/hellomap3d/tree/master/AdvancedMap3D">https://github.com/nutiteq/hellomap3d/tree/master/AdvancedMap3D</a>
+</li>
+<li>Running AdvancedMap3D sample app: <a href="https://github.com/nutiteq/hellomap3d/wiki/Get-advancedmap3d-to-start">https://github.com/nutiteq/hellomap3d/wiki/Get-advancedmap3d-to-start</a> </li>
+</ul><h1>
+<a name="usage-in-your-app" class="anchor" href="#usage-in-your-app"><span class="octicon octicon-link"></span></a>Usage in your app</h1>
+
+<p>To use the library in your app you need to include AdvancedLayers and external dependencies to your project. Depending on your development environment and IDE there are several ways to do it.</p>
+
+<h2>
+<a name="in-android-studio--gradle" class="anchor" href="#in-android-studio--gradle"><span class="octicon octicon-link"></span></a>In Android Studio / Gradle</h2>
+
+<p>Into your <strong>build.gradle</strong></p>
+
+<pre><code>// Make sure you have nutiteq snapshot repository:
+
+allprojects {
+    repositories {
+        mavenCentral()
+        maven {
+            url "http://repository-nutiteq.forge.cloudbees.com/release/"
+                }
+        maven {
+            url "http://repository-nutiteq.forge.cloudbees.com/snapshot/"
+            }
+
+    }
+}
+
+
+// add advancedlayers dependency:
+dependencies {
+    compile "com.nutiteq:nutiteq-3d-sdk:2.3.1"
+    compile "com.nutiteq.advancedlayers:AdvancedLayers:1.0-SNAPSHOT"
+}
+</code></pre>
+
+<h2>
+<a name="maven-eclipse" class="anchor" href="#maven-eclipse"><span class="octicon octicon-link"></span></a>Maven (Eclipse)</h2>
+
+<p>Add to your <strong>pom.xml</strong> (full sample: <a href="https://github.com/nutiteq/hellomap3d/blob/master/AdvancedMap3D/pom.xml">https://github.com/nutiteq/hellomap3d/blob/master/AdvancedMap3D/pom.xml</a>):</p>
+
+<pre><code>&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;snapshots&gt;
+            &lt;enabled&gt;true&lt;/enabled&gt;
+            &lt;updatePolicy&gt;always&lt;/updatePolicy&gt;
+        &lt;/snapshots&gt;
+        &lt;id&gt;cloudbees-nutiteq-snapshot&lt;/id&gt;
+        &lt;name&gt;Nutiteq SDK snapshot repository&lt;/name&gt;
+        &lt;url&gt;http://repository-nutiteq.forge.cloudbees.com/snapshot/&lt;/url&gt;
+    &lt;/repository&gt;
+    &lt;repository&gt;
+        &lt;id&gt;cloudbees-nutiteq-release&lt;/id&gt;
+        &lt;name&gt;Nutiteq SDK release repository&lt;/name&gt;
+        &lt;url&gt;http://repository-nutiteq.forge.cloudbees.com/release/&lt;/url&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;
+
+&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.google.android&lt;/groupId&gt;
+        &lt;artifactId&gt;android&lt;/artifactId&gt;
+        &lt;version&gt;${platform.version}&lt;/version&gt;
+        &lt;scope&gt;provided&lt;/scope&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- Advanced layers and Nutiteq SDK --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.nutiteq.advancedlayers&lt;/groupId&gt;
+        &lt;artifactId&gt;AdvancedLayers&lt;/artifactId&gt;
+        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+        &lt;scope&gt;compile&lt;/scope&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- Native (NDK) libraries built by Nutiteq --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.nutiteq.advancedlayers&lt;/groupId&gt;
+        &lt;artifactId&gt;ogrjni&lt;/artifactId&gt;
+        &lt;version&gt;snapshot&lt;/version&gt;
+        &lt;classifier&gt;armeabi&lt;/classifier&gt;
+        &lt;type&gt;so&lt;/type&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.nutiteq.advancedlayers&lt;/groupId&gt;
+        &lt;artifactId&gt;gdalconstjni&lt;/artifactId&gt;
+        &lt;version&gt;snapshot&lt;/version&gt;
+        &lt;classifier&gt;armeabi&lt;/classifier&gt;
+        &lt;type&gt;so&lt;/type&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.nutiteq.advancedlayers&lt;/groupId&gt;
+        &lt;artifactId&gt;gdaljni&lt;/artifactId&gt;
+        &lt;version&gt;snapshot&lt;/version&gt;
+        &lt;classifier&gt;armeabi&lt;/classifier&gt;
+        &lt;type&gt;so&lt;/type&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.nutiteq.advancedlayers&lt;/groupId&gt;
+        &lt;artifactId&gt;jsqlite&lt;/artifactId&gt;
+        &lt;version&gt;snapshot&lt;/version&gt;
+        &lt;classifier&gt;armeabi&lt;/classifier&gt;
+        &lt;type&gt;so&lt;/type&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.nutiteq.advancedlayers&lt;/groupId&gt;
+        &lt;artifactId&gt;osrjni&lt;/artifactId&gt;
+        &lt;version&gt;snapshot&lt;/version&gt;
+        &lt;classifier&gt;armeabi&lt;/classifier&gt;
+        &lt;type&gt;so&lt;/type&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.nutiteq.advancedlayers&lt;/groupId&gt;
+        &lt;artifactId&gt;proj&lt;/artifactId&gt;
+        &lt;version&gt;snapshot&lt;/version&gt;
+        &lt;classifier&gt;armeabi&lt;/classifier&gt;
+        &lt;type&gt;so&lt;/type&gt;
+    &lt;/dependency&gt;
+</code></pre>
+
+<h2>
+<a name="manual-jar-file" class="anchor" href="#manual-jar-file"><span class="octicon octicon-link"></span></a>Manual jar file</h2>
+
+<ol>
+<li>
+<p>Download Nutiteq code:</p>
+
+<ul>
+<li>Latest .jar file from <a href="https://github.com/nutiteq/hellomap3d/blob/master/AdvancedMap3D/extlibs/AdvancedLayers-1.0-SNAPSHOT.jar">https://github.com/nutiteq/hellomap3d/blob/master/AdvancedMap3D/extlibs/AdvancedLayers-1.0-SNAPSHOT.jar</a> </li>
+<li>Latest Nutiteq SDK jar file from <a href="https://github.com/nutiteq/hellomap3d/wiki/Downloads">https://github.com/nutiteq/hellomap3d/wiki/Downloads</a>
+</li>
+</ul>
+</li>
+<li><p>Save them to your project libs/ folder. </p></li>
+<li>
+<p>For other dependencies: </p>
+
+<ul>
+<li>Java libs from extlibs folder (<a href="https://github.com/nutiteq/advancedlayers/tree/master/extlibs">https://github.com/nutiteq/advancedlayers/tree/master/extlibs</a>)</li>
+<li>If you use native libraries (for e.g. sqlite, shapefile, geotiff etc) then you need also .so files from same location, usually armeabi/ folder is enough.</li>
+</ul>
+</li>
+</ol><h1>
+<a name="test-datasets" class="anchor" href="#test-datasets"><span class="octicon octicon-link"></span></a>Test datasets</h1>
+
+<p>Depending on layers you may find useful to copy following files to the sdcard of your device, and modify paths in the code accordingly:</p>
+
+<ul>
+<li>Spatialite : Romania OpenStreetMap data, Spatialite 3.0 format: <a href="https://www.dropbox.com/s/j4aahjo7whkzx2r/romania_sp3857.sqlite">https://www.dropbox.com/s/j4aahjo7whkzx2r/romania_sp3857.sqlite</a>
+</li>
+<li>Raster data: Digital Earth, Natural earth converted to Spherical Mercator: <a href="https://www.dropbox.com/s/fwd7f1l4gy36u94/natural-earth-2-mercator.tif">https://www.dropbox.com/s/fwd7f1l4gy36u94/natural-earth-2-mercator.tif</a>
+</li>
+<li>Mapsforge: <a href="http://ftp.mapsforge.org/maps">http://ftp.mapsforge.org/maps</a>
+</li>
+<li>Shapefiles: OpenStreetMap data, Estonia: <a href="https://www.dropbox.com/s/72yhmo2adl01dho/shp_ee_3857.zip">https://www.dropbox.com/s/72yhmo2adl01dho/shp_ee_3857.zip</a>
+</li>
+<li>MBTiles: European countries with UTFGrid interaction: <a href="http://a.tiles.mapbox.com/v3/nutiteq.geography-class.mbtiles">http://a.tiles.mapbox.com/v3/nutiteq.geography-class.mbtiles</a> . Or you can download free TileMill <a href="http://mapbox.com/tilemill/">http://mapbox.com/tilemill/</a> and create a package yourself.</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Advancedlayers maintained by <a href="https://github.com/nutiteq">nutiteq</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
