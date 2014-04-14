@@ -12,6 +12,7 @@ import com.nutiteq.components.Bounds;
 import com.nutiteq.components.Envelope;
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.MutableMapPos;
+import com.nutiteq.log.Log;
 import com.nutiteq.projections.Projection;
 import com.nutiteq.utils.GeomUtils;
 import com.nutiteq.utils.Utils;
@@ -47,17 +48,17 @@ public abstract class Proj4jProjection extends Projection {
     }    
   };
 
+  private static final String WGS84_PARAM = "+title=long/lat:WGS84 +proj=longlat +datum=WGS84 +units=degrees";
+
   private final CoordinateReferenceSystem projection;
   private final Bounds bounds;
   private final String name;
   private final String[] args;
   private final ZScaleCalculator zScaleCalculator;
   
-  private static final CoordinateTransformFactory ctFactory = new CoordinateTransformFactory();
-  CRSFactory crsFactory = new CRSFactory();
-  
-  static final String WGS84_PARAM = "+title=long/lat:WGS84 +proj=longlat +datum=WGS84 +units=degrees";
-  CoordinateReferenceSystem WGS84 = crsFactory.createFromParameters("WGS84", WGS84_PARAM);
+  private final CoordinateTransformFactory ctFactory = new CoordinateTransformFactory();
+  private final CRSFactory crsFactory = new CRSFactory();
+  private final CoordinateReferenceSystem WGS84;
   private CoordinateTransform trans;
   private CoordinateTransform invTrans;
 
@@ -87,8 +88,7 @@ public abstract class Proj4jProjection extends Projection {
    *        bounds for this projection
    */
   public Proj4jProjection(String name, Bounds bounds) {
-    CRSFactory crsFactory = new CRSFactory();
-
+    this.WGS84 = crsFactory.createFromParameters("WGS84", WGS84_PARAM);
     this.projection = crsFactory.createFromName(name);
     this.bounds = bounds;
     this.name = name;
@@ -97,7 +97,6 @@ public abstract class Proj4jProjection extends Projection {
     
     this.trans = ctFactory.createTransform(this.projection, WGS84);
     this.invTrans = ctFactory.createTransform(WGS84, this.projection);
-
   }
 
   /**
@@ -109,9 +108,8 @@ public abstract class Proj4jProjection extends Projection {
    *        bounds for this projection
    */
   public Proj4jProjection(String[] args, Bounds bounds) {
-    CRSFactory crsFactory = new CRSFactory();
+    this.WGS84 = crsFactory.createFromParameters("WGS84", WGS84_PARAM);
     this.projection = crsFactory.createFromParameters("MyProjection", args);
-      
     this.bounds = bounds;
     this.name = "";
     this.args = args.clone();
@@ -119,7 +117,6 @@ public abstract class Proj4jProjection extends Projection {
     
     this.trans = ctFactory.createTransform(this.projection, WGS84);
     this.invTrans = ctFactory.createTransform(WGS84, this.projection);
-    
   }
   
   /**
@@ -133,17 +130,15 @@ public abstract class Proj4jProjection extends Projection {
    *        Z-scale calculator for this projection.
    */
   public Proj4jProjection(String[] args, Bounds bounds, ZScaleCalculator zScaleCalculator) {
-      CRSFactory crsFactory = new CRSFactory();
-      this.projection = crsFactory.createFromParameters("MyProjection", args);
-        
-      this.bounds = bounds;
-      this.name = "";
-      this.args = args.clone();
-      this.zScaleCalculator = zScaleCalculator;
+    this.WGS84 = crsFactory.createFromParameters("WGS84", WGS84_PARAM);
+    this.projection = crsFactory.createFromParameters("MyProjection", args);
+    this.bounds = bounds;
+    this.name = "";
+    this.args = args.clone();
+    this.zScaleCalculator = zScaleCalculator;
 
-      this.trans = ctFactory.createTransform(this.projection, WGS84);
-      this.invTrans = ctFactory.createTransform(WGS84, this.projection);
-      
+    this.trans = ctFactory.createTransform(this.projection, WGS84);
+    this.invTrans = ctFactory.createTransform(WGS84, this.projection);
   }
 
   @Override
@@ -153,25 +148,33 @@ public abstract class Proj4jProjection extends Projection {
 
   @Override
   public MapPos fromWgs84(double lon, double lat) {
-    if (projection.toString().equals("Null")) {
-      return new MapPos(lon, lat);
-    }
-    ProjCoordinate src = new ProjCoordinate(lon, lat);
+    ProjCoordinate src = new ProjCoordinate(lon, Utils.toRange(lat, -90, 90));
     ProjCoordinate dst = new ProjCoordinate();
    
-    this.invTrans.transform(src, dst);
+    try {
+      synchronized (invTrans) {
+        invTrans.transform(src, dst);
+      }
+    } catch (RuntimeException e) {
+      Log.error("Proj4jProjection: fromWgs84 " + lon + ", " + lat + ": " + e);
+      throw e;
+    }
     return new MapPos(dst.x, dst.y);
   }
   
   @Override
   public MapPos toWgs84(double x, double y) {
-    if (projection.toString().equals("Null")) {
-      return new MapPos(x, y);
-    }
     ProjCoordinate src = new ProjCoordinate(x, y);
     ProjCoordinate dst = new ProjCoordinate();
   
-    this.trans.transform(src, dst);
+    try {
+      synchronized (trans) {
+        trans.transform(src, dst);
+      }
+    } catch (RuntimeException e) {
+      Log.error("Proj4jProjection: toWgs84 input " + x + ", " + y + ": " + e);
+      throw e;
+    }
     return new MapPos(dst.x, dst.y);
   }
 
