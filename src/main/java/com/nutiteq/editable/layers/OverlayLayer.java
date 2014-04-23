@@ -91,14 +91,10 @@ public class OverlayLayer extends GeometryLayer {
 
     @Override
     public void onElementChanged(VectorElement element) {
-        if (element instanceof Geometry) {
-            element.calculateInternalState();
-            Components components = getComponents();
-            if (components != null) {
-                components.mapRenderers.getMapRenderer().requestRenderView();
-            }
-        } else {
-            super.onElementChanged(element);
+        super.onElementChanged(element);
+        Components components = getComponents();
+        if (components != null) {
+            components.mapRenderers.getMapRenderer().requestRenderView();
         }
     }
 
