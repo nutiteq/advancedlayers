@@ -121,54 +121,66 @@ public class StoredRasterDataSource extends AbstractRasterDataSource {
     private TileBitmap readTileFromStream(InputStream inputStream, int dx, int dy) {
         try {
 
-            // Read header
-            int toRead = 6 * tilesPerFile + 2;
-            final byte[] header = new byte[toRead];
-            long ch = 0;
-            int rd = 0;
-            while ((rd < toRead) && (ch >= 0)) {
-                ch = inputStream.read(header, rd, toRead - rd);
-                if (ch > 0) {
-                    rd += ch;
+            
+            if(tilesPerFile == 1){
+                // for tilesPerFile = 1 case there is no header, just read all data
+
+                final byte[] result = MGMUtils.readFully(inputStream);
+                return new TileBitmap(result);
+                
+            }else{
+                
+                int offset = -1;
+                int offset2 = -1;
+                long ch = 0;
+                int rd = 0;
+
+                // Read header
+                int toRead = 6 * tilesPerFile + 2;
+                final byte[] header = new byte[toRead];
+                while ((rd < toRead) && (ch >= 0)) {
+                    ch = inputStream.read(header, rd, toRead - rd);
+                    if (ch > 0) {
+                        rd += ch;
+                    }
                 }
-            }
 
-            // Search for the tile
-            final int numberOfTilesStored = (Utils.unsigned(header[0]) << 8) + Utils.unsigned(header[1]);
-            int offset = -1;
-            int offset2 = -1;
-            final int n6 = numberOfTilesStored * 6;
-            for (int i6 = 0; i6 < n6; i6 += 6) {
-                if ((header[2 + i6] == dx || header[2 + i6] + 256 == dx)
-                        && (header[3 + i6] == dy || header[3 + i6] + 256 == dy)) {
-                    offset2 = (Utils.unsigned(header[4 + i6]) << 24) + (Utils.unsigned(header[5 + i6]) << 16)
-                            + (Utils.unsigned(header[6 + i6]) << 8) + (Utils.unsigned(header[7 + i6]));
-                    offset = (i6 == 0) ? toRead : ((Utils.unsigned(header[i6 - 2]) << 24)
-                            + (Utils.unsigned(header[i6 - 1]) << 16) + (Utils.unsigned(header[i6]) << 8) + (Utils
-                                    .unsigned(header[i6 + 1])));
-                    break;
+                // Read tile offsets from header
+                final int numberOfTilesStored = (Utils.unsigned(header[0]) << 8) + Utils.unsigned(header[1]);
+                final int n6 = numberOfTilesStored * 6;
+                for (int i6 = 0; i6 < n6; i6 += 6) {
+                    if ((header[2 + i6] == dx || header[2 + i6] + 256 == dx)
+                            && (header[3 + i6] == dy || header[3 + i6] + 256 == dy)) {
+                        offset2 = (Utils.unsigned(header[4 + i6]) << 24) + (Utils.unsigned(header[5 + i6]) << 16)
+                                + (Utils.unsigned(header[6 + i6]) << 8) + (Utils.unsigned(header[7 + i6]));
+                        offset = (i6 == 0) ? toRead : ((Utils.unsigned(header[i6 - 2]) << 24)
+                                + (Utils.unsigned(header[i6 - 1]) << 16) + (Utils.unsigned(header[i6]) << 8) + (Utils
+                                        .unsigned(header[i6 + 1])));
+                        break;
+                    }
                 }
-            }
 
-            if (offset < 0) {
-                throw new IllegalArgumentException("Tile not found");
-            }
-
-            // Seek
-            MGMUtils.skip(inputStream, offset - toRead, BUFFER_SIZE);
-
-            // read data
-            ch = 0;
-            rd = 0;
-            toRead = offset2 - offset;
-            final byte[] result = new byte[toRead];
-            while ((rd < toRead) && (ch >= 0)) {
-                ch = inputStream.read(result, rd, (toRead - rd) > BUFFER_SIZE ? BUFFER_SIZE : (toRead - rd));
-                if (ch > 0) {
-                    rd += ch;
+                if (offset < 0) {
+                    throw new IllegalArgumentException("Tile not found");
                 }
+
+                // Skip not needed tiles in the file
+                MGMUtils.skip(inputStream, offset - toRead, BUFFER_SIZE);
+                // read data
+                ch = 0;
+                rd = 0;
+                toRead = offset2 - offset;
+                final byte[] result = new byte[toRead];
+                while ((rd < toRead) && (ch >= 0)) {
+                    ch = inputStream.read(result, rd, (toRead - rd) > BUFFER_SIZE ? BUFFER_SIZE : (toRead - rd));
+                    if (ch > 0) {
+                        rd += ch;
+                    }
+                }
+                return new TileBitmap(result);
             }
-            return new TileBitmap(result);
+
+
 
         } catch (IOException e) {
             Log.error(getClass().getName() + ": Failed to fetch tile. " + e.getMessage());
