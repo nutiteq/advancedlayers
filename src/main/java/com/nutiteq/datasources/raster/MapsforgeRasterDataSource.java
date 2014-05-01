@@ -60,7 +60,7 @@ public class MapsforgeRasterDataSource extends AbstractRasterDataSource {
     }
 
     @Override
-    public TileBitmap loadTile(MapTile tile) {
+    synchronized public TileBitmap loadTile(MapTile tile) {
         long startTime = System.currentTimeMillis();
         
         RendererJob rendererJob = new RendererJob(new Tile(tile.x, tile.y, (byte) tile.zoom), this.mapFile, this.theme, this.displayModel, DEFAULT_TEXT_SCALE,
