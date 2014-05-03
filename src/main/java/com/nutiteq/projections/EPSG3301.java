@@ -25,6 +25,15 @@ public class EPSG3301 extends JavaProjProjection {
     super(ARGS, BOUNDS);
   }
   
+  /**
+   * Constructor with explicit bounds. This can be used for custom raster tiles requiring origin shift/scaling.
+   * 
+   * @param bounds projection bounds
+   */
+  public EPSG3301(Bounds bounds) {
+    super(ARGS, bounds);
+  }
+
   @Override
   public String name() {
     return "EPSG:3301";

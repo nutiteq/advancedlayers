@@ -1,15 +1,16 @@
 package com.nutiteq.utils;
 
+import com.nutiteq.components.Bounds;
 import com.nutiteq.components.Envelope;
 import com.nutiteq.components.MapPos;
+import com.nutiteq.components.MapTile;
 import com.nutiteq.log.Log;
 import com.nutiteq.projections.Projection;
 
 public class TileUtils {
     
     private static final double TILESIZE = 256;
-    private static final double initialResolution = 2.0f * Math.PI * 6378137.0f
-            / TILESIZE;
+    private static final double initialResolution = 2.0f * Math.PI * 6378137.0f / TILESIZE;
     private static final double originShift = 2.0f * Math.PI * 6378137.0f / 2.0f;
 
     // following is from
@@ -73,13 +74,12 @@ public class TileUtils {
      * @deprecated use TileBounds with projection instead
      */
     public static Envelope TileBounds(int tx, int ty, int zoom) {
-            double[] min = PixelsToMeters(tx * TILESIZE, ty * TILESIZE, zoom);
-            double minx = min[0], miny = min[1];
-            double[] max = PixelsToMeters((tx + 1) * TILESIZE, (ty + 1) * TILESIZE,
-                            zoom);
-            double maxx = max[0], maxy = max[1];
+        double[] min = PixelsToMeters(tx * TILESIZE, ty * TILESIZE, zoom);
+        double minx = min[0], miny = min[1];
+        double[] max = PixelsToMeters((tx + 1) * TILESIZE, (ty + 1) * TILESIZE, zoom);
+        double maxx = max[0], maxy = max[1];
             
-            return new Envelope( minx, maxx, miny, maxy);
+        return new Envelope( minx, maxx, miny, maxy);
     }
     
     /**
@@ -107,7 +107,7 @@ public class TileUtils {
         Log.debug("Tile: x=" + tx + ",y=" + ty + ",zoom=" + zoom + ",env=" + env);
         
         return env;
-}
+    }
 
     
     /**
@@ -118,13 +118,11 @@ public class TileUtils {
      */
     public static double[] MetersToLatLon(double mx, double my) {
 
-            double lon = (mx / originShift) * 180.0;
-            double lat = (my / originShift) * 180.0;
+        double lon = (mx / originShift) * 180.0;
+        double lat = (my / originShift) * 180.0;
 
-            lat = 180
-                            / Math.PI
-                            * (2 * Math.atan(Math.exp(lat * Math.PI / 180.0)) - Math.PI / 2.0);
-            return new double[] { lat, lon };
+        lat = 180 / Math.PI * (2 * Math.atan(Math.exp(lat * Math.PI / 180.0)) - Math.PI / 2.0);
+        return new double[] { lat, lon };
     }
     
     /**
@@ -133,11 +131,37 @@ public class TileUtils {
      * @return
      */
     public static double[] PixelsToMeters(double px, double py, int zoom) {
-            double res = Resolution(zoom);
-            double mx = px * res - originShift;
-            double my = originShift - (py * res);
-            return new double[] { mx, my };
+        double res = Resolution(zoom);
+        double mx = px * res - originShift;
+        double my = originShift - (py * res);
+        return new double[] { mx, my };
     }
 
+    /**
+     * Calculate projection bounds matching 2 tile pixels
+     * 
+     * @param tile1 first tile info, id is not used
+     * @param tile1x pixel x coordinate in the first tile 
+     * @param tile1y pixel y coordinate in the first tile
+     * @param projPos1 projection position corresponding to the first tile pixel
+     * @param tile2 second tile info, id is not used
+     * @param tile2x pixel x coordinate in the second tile
+     * @param tile2y pixel y coordinate in the second tile
+     * @param projPos2 projection position corresponding to the second tile pixel
+     * @return projection bounds
+     */
+    public static Bounds ProjectionBounds(MapTile tile1, float tile1x, float tile1y, MapPos projPos1, MapTile tile2, float tile2x, float tile2y, MapPos projPos2) {
+        float screen1x = (tile1x / 256.0f + tile1.x) / (1 << tile1.zoom);
+        float screen1y = (tile1y / 256.0f + tile1.y) / (1 << tile1.zoom);
+        float screen2x = (tile2x / 256.0f + tile2.x) / (1 << tile2.zoom);
+        float screen2y = (tile2y / 256.0f + tile2.y) / (1 << tile2.zoom);
+
+        double c1 = (projPos1.x - projPos2.x) / (screen1x - screen2x);
+        double o1 = projPos1.x - c1 * screen1x; 
+        double c2 = (projPos1.y - projPos2.y) / (screen1y - screen2y);
+        double o2 = projPos1.y - c2 * screen1y;
+
+        return new Bounds(o1, o2 + c2, o1 + c1, o2);
+    }
     
 }
