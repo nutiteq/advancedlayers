@@ -92,16 +92,18 @@ public class TileUtils {
      */
     public static Envelope TileBounds(int tx, int ty, int zoom, Projection proj) {
 
-        double originShiftX =  (proj.getBounds().right-proj.getBounds().left) / 2.0;
-        double originShiftY =  (proj.getBounds().top-proj.getBounds().bottom) / 2.0;
+        Bounds bounds = proj.getBounds();
 
-        double dim = Math.min(proj.getBounds().getWidth(), proj.getBounds().getHeight());
-        double res = dim / (TILESIZE * (double) (1<<(zoom))); // 1<<(zoom) is same as power(2;zoom)
-        double minx = ((double) tx) * TILESIZE * res - originShiftX;
-        double miny = (((double)  (1<<(zoom))-1-ty) * TILESIZE * res) - originShiftY;
+        int xCount = Math.max(1, (int) Math.round(bounds.getWidth() / bounds.getHeight()));
+        int yCount = Math.max(1, (int) Math.round(bounds.getHeight() / bounds.getWidth()));
 
-        double maxx = (double)(tx+1) * TILESIZE * res - originShiftX;
-        double maxy = ((double)( (1<<(zoom))-1-ty + 1) * TILESIZE * res) - originShiftY;
+        double resx = bounds.getWidth() / xCount / (TILESIZE * (double) (1<<(zoom)));
+        double resy = bounds.getHeight() / yCount / (TILESIZE * (double) (1<<(zoom)));
+
+        double minx = ((double) tx + 0) * TILESIZE * resx + bounds.left;
+        double maxx = ((double) tx + 1) * TILESIZE * resx + bounds.left;
+        double miny = -((double) ty + 1) * TILESIZE * resy + bounds.top;
+        double maxy = -((double) ty + 0) * TILESIZE * resy + bounds.top;
         
         Envelope env = new Envelope( minx, maxx, miny, maxy);
         Log.debug("Tile: x=" + tx + ",y=" + ty + ",zoom=" + zoom + ",env=" + env);
