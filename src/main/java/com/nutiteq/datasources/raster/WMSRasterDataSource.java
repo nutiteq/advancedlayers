@@ -5,6 +5,7 @@ import java.util.Map;
 import android.net.Uri;
 
 import com.nutiteq.components.Envelope;
+import com.nutiteq.components.MapPos;
 import com.nutiteq.components.MapTile;
 import com.nutiteq.components.MutableMapPos;
 import com.nutiteq.log.Log;
@@ -75,6 +76,24 @@ public class WMSRasterDataSource extends HTTPRasterDataSource {
         uri.appendQueryParameter("FEATURE_COUNT", "10");
         uri.appendQueryParameter("X", Integer.toString((int) (tileSize * tilePos.x)));
         uri.appendQueryParameter("Y", Integer.toString(tileSize - (int) (tileSize * tilePos.y)));
+        return NetUtils.downloadUrl(uri.toString(), this.httpHeaders, true, "UTF-8");
+    }
+
+    // implements GetFeatureInfo WMS request
+    // Uses hardcoded values for several parameters
+    public String getFeatureInfo(MapPos mapPos) {
+        final float DELTA = 0.0001f;
+        String bbox = ""
+          + (mapPos.x - DELTA) + "," + (mapPos.y - DELTA) + ","
+          + (mapPos.x + DELTA) + "," + (mapPos.y + DELTA);
+
+        Uri.Builder uri = createBaseUri("GetFeatureInfo");
+        uri.appendQueryParameter("BBOX", bbox);
+        uri.appendQueryParameter("QUERY_LAYERS", layer);
+        uri.appendQueryParameter("INFO_FORMAT", "text/html");
+        uri.appendQueryParameter("FEATURE_COUNT", "10");
+        uri.appendQueryParameter("X", Integer.toString(tileSize / 2));
+        uri.appendQueryParameter("Y", Integer.toString(tileSize / 2));
         return NetUtils.downloadUrl(uri.toString(), this.httpHeaders, true, "UTF-8");
     }
 
