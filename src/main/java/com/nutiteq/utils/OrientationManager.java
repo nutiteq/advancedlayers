@@ -120,7 +120,20 @@ public class OrientationManager {
             if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
                 // Get the current heading from the sensor, then notify the listeners of the
                 // change.
-                SensorManager.getRotationMatrixFromVector(mRotationMatrix, event.values);
+                try {
+                    SensorManager.getRotationMatrixFromVector(mRotationMatrix, event.values);
+                } catch (IllegalArgumentException e) {
+                    if (event.values.length > 3) {
+                        // Samsung Note 3 bug: see https://groups.google.com/forum/#!topic/android-developers/U3N9eL5BcJk
+                        float[] newVector = new float[] {
+                                event.values[0],
+                                event.values[1],
+                                event.values[2]
+                        };
+                        SensorManager.getRotationMatrixFromVector(mRotationMatrix, newVector); 
+                    }
+                }
+
                 SensorManager.remapCoordinateSystem(mRotationMatrix, SensorManager.AXIS_X,
                         SensorManager.AXIS_Z, mRotationMatrix);
                 SensorManager.getOrientation(mRotationMatrix, mOrientation);
