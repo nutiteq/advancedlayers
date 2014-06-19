@@ -84,7 +84,7 @@ public class GdalMapLayer extends RasterLayer {
     @SuppressWarnings("unchecked")
     public GdalMapLayer(Projection projection, int minZoom, int maxZoom,
             int id, String gdalSource, MapView mapView, boolean reproject) throws IOException {
-        super(projection, minZoom, maxZoom, id);
+        super(projection, minZoom, maxZoom, id, gdalSource); // TODO: remove last argument
         
         this.mapView = mapView;
         
