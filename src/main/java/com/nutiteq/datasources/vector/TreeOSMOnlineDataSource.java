@@ -20,7 +20,7 @@ import android.net.Uri;
 import com.nutiteq.components.CullState;
 import com.nutiteq.components.Envelope;
 import com.nutiteq.components.MapPos;
-import com.nutiteq.components.Vector;
+import com.nutiteq.components.Vector3D;
 import com.nutiteq.geometry.Geometry;
 import com.nutiteq.geometry.NMLModel;
 import com.nutiteq.geometry.Point;
@@ -106,7 +106,7 @@ public class TreeOSMOnlineDataSource extends AbstractVectorDataSource<NMLModel> 
 					if (geom instanceof Point) {
 						MapPos location = ((Point) geom).getMapPos();
 						NMLModel tree = new NMLModel(location, null, modelStyleSet, nmlModel, null);
-						tree.setScale(new Vector(scale, scale, scale));
+						tree.setScale(new Vector3D(scale, scale, scale));
 						tree.setId(id);
 						trees.add(tree);
 					} else {

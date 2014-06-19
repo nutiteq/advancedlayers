@@ -28,6 +28,7 @@ public class PackagedMapLayer extends RasterLayer {
     protected Resources resources;
 
     protected String name;
+    protected String location;
 
     /**
      * Class constructor. Creates a new raster layer that uses the res/raw/ folder as a source for the tile data. Tiles
@@ -50,9 +51,10 @@ public class PackagedMapLayer extends RasterLayer {
      */
     public PackagedMapLayer(Projection projection, int minZoom, int maxZoom, int id, String name,
             Context context) {
-        super(projection, minZoom, maxZoom, id, context.getPackageName() + ":raw/");
+        super(projection, minZoom, maxZoom, id, context.getPackageName() + ":raw/"); // TODO: use constructor without last argument
         this.resources = context.getResources();
         this.name = name;
+        this.location = context.getPackageName() + ":raw/";
     }
 
     @Override
@@ -71,11 +73,6 @@ public class PackagedMapLayer extends RasterLayer {
         String resultString = result.toString();
         Log.info("PackagedMapLayer: Start loading " + resultString);
         executeFetchTask(new IntFetchTileTask(tile, components, tileIdOffset, resultString, resources));
-    }
-
-    @Override
-    public void flush() {
-
     }
 
 }

@@ -26,6 +26,7 @@ import com.nutiteq.tasks.deprecated.NetFetchTileTask;
 @Deprecated
 public class QuadKeyLayer extends RasterLayer {
     protected final String extension;
+    protected String location;
     private Map<String, String> httpHeaders;
 
     /**
@@ -49,8 +50,9 @@ public class QuadKeyLayer extends RasterLayer {
      */
     public QuadKeyLayer(Projection projection, int minZoom, int maxZoom, int id, String baseUrl,
             String extension) {
-        super(projection, minZoom, maxZoom, id, baseUrl);
+        super(projection, minZoom, maxZoom, id, baseUrl); // TODO: use location without baseUrl
         this.extension = extension;
+        this.location = baseUrl;
         setPersistentCaching(true);
     }
 
@@ -82,9 +84,5 @@ public class QuadKeyLayer extends RasterLayer {
         url.append(extension);
         String urlString = url.toString();
         executeFetchTask(new NetFetchTileTask(tile, components, tileIdOffset, urlString, this.httpHeaders, memoryCaching, persistentCaching));
-    }
-
-    @Override
-    public void flush() {
     }
 }

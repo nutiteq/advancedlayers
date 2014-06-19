@@ -81,7 +81,7 @@ public class MBTilesMapLayer extends RasterLayer implements UtfGridLayerInterfac
      */
     public MBTilesMapLayer(Projection projection, int minZoom, int maxZoom,
             int id, String path, Context ctx) throws IOException {
-        super(projection, minZoom, maxZoom, id, path);
+        super(projection, minZoom, maxZoom, id, path); // TODO: use constructor without path
 
         if (!(new File(path)).exists()) {
             throw new IOException("not existing file: " + path);
@@ -116,10 +116,6 @@ public class MBTilesMapLayer extends RasterLayer implements UtfGridLayerInterfac
                 + " x=" + flippedTile.x + " y=" + flippedTile.y);
         executeFetchTask(new DbFetchTileTask(flippedTile, components,
                 tileIdOffset, db));
-    }
-
-    @Override
-    public void flush() {
     }
 
     /**

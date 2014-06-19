@@ -90,7 +90,7 @@ public abstract class EditableGeometryDbLayer extends GeometryLayer {
 				currentElementMap.remove(id);
 			}
 		}
-		setVisibleElementsList(new ArrayList<Geometry>(currentElementMap.values()));
+		setVisibleElements(new ArrayList<Geometry>(currentElementMap.values()));
 
 		updateVisibleElements();
 	}
@@ -135,7 +135,7 @@ public abstract class EditableGeometryDbLayer extends GeometryLayer {
 	@Override
 	public void calculateVisibleElements(Envelope envelope, int zoom) {
 		if (zoom < minZoom) {
-			setVisibleElementsList(null);
+			setVisibleElements(null);
 			return;
 		}
 
@@ -187,7 +187,7 @@ public abstract class EditableGeometryDbLayer extends GeometryLayer {
 		}
 
 		List<Geometry> newElements = new ArrayList<Geometry>(newElementMap.values());
-		setVisibleElementsList(newElements);
+		setVisibleElements(newElements);
 		currentElementMap = newElementMap;
 	}
 

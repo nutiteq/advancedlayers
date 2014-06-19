@@ -45,6 +45,7 @@ public class StoredMapLayer extends RasterLayer {
     private int tpfy = 1;
 
     private String name;
+    private String location;
     public MapPos center;
 
     /**
@@ -70,9 +71,10 @@ public class StoredMapLayer extends RasterLayer {
      *          the path to the main map folder
      */
     public StoredMapLayer(Projection projection, int tileSize, int minZoom, int maxZoom, int id, String name, String path) {
-        super(projection, minZoom, maxZoom, id, path);
+        super(projection, minZoom, maxZoom, id, path); // TODO: use constructor without path
         this.tileSize = tileSize;
         this.name = name;
+        this.location = path;
         readConfig();
     }
 
@@ -99,10 +101,6 @@ public class StoredMapLayer extends RasterLayer {
         Log.info("StoredMapLayer: Start loading" + resultString);
         executeFetchTask(new ExtFetchTileTask(tile, components, tileIdOffset, resultString,
                 tilesPerFile, tile.x % tpfx, tile.y % tpfy));
-    }
-
-    @Override
-    public void flush() {
     }
 
     public void readConfig() {

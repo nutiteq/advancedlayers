@@ -26,7 +26,7 @@ public class TileDebugMapLayer extends RasterLayer {
 
     public TileDebugMapLayer(Projection projection, int minZoom, int maxZoom,
             int id, int tileSize, Context context) {
-        super(projection, minZoom, maxZoom, id, "");
+        super(projection, minZoom, maxZoom, id, ""); // TODO: use constructor without last argument
         this.tileSize = tileSize;
         this.context = context;
 
@@ -107,11 +107,6 @@ public class TileDebugMapLayer extends RasterLayer {
     public void fetchTile(MapTile tile) {
         executeFetchTask(new DebugTileTask(tile, components, getTileIdOffset(), "" + tile.zoom + "/"
                 + tile.x + "/" + tile.y, context));
-    }
-
-    @Override
-    public void flush() {
-
     }
 
     public class DebugTileTask extends FetchTileTask {

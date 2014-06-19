@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import com.nutiteq.components.Envelope;
 import com.nutiteq.components.MapPos;
-import com.nutiteq.db.DBLayer;
 import com.nutiteq.db.SpatialLiteDbHelper;
 import com.nutiteq.geometry.Geometry;
 import com.nutiteq.geometry.Polygon;

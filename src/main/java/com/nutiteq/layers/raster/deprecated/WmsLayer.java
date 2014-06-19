@@ -23,6 +23,7 @@ public class WmsLayer extends RasterLayer {
 
     private String layer;
     private String format;
+    private String location;
     private String style;
     private Map<String, String> httpHeaders;
     private int tileSize = 256;
@@ -49,10 +50,11 @@ public class WmsLayer extends RasterLayer {
      */
     public WmsLayer(Projection projection, int minZoom, int maxZoom, int id,
             String baseUrl, String style, String layer, String format) {
-        super(projection, minZoom, maxZoom, id, baseUrl);
+        super(projection, minZoom, maxZoom, id, baseUrl); // TODO: use constructor without last argument
         this.style = style;
         this.layer = layer;
         this.format = format;
+        this.location = baseUrl;
         setPersistentCaching(true);
     }
 
@@ -112,11 +114,6 @@ public class WmsLayer extends RasterLayer {
     public void setTileSize(int tileSize) {
         this.tileSize = tileSize;
     }
-
-    @Override
-    public void flush() {
-    }
-
 
     // implements GetFeatureInfo WMS request
     // Uses hardcoded values for several parameters

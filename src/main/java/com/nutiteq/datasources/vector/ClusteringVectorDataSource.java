@@ -146,7 +146,7 @@ public class ClusteringVectorDataSource<T extends VectorElement> extends Abstrac
       MapPos elementPos = elementMerger.getMapPos(element);
       for (Cluster cluster : clusters) {
         diff.setCoords(elementPos.x - cluster.mapPos.x, elementPos.y - cluster.mapPos.y);
-        if (diff.getLength2D() <= maxDistance) {
+        if (diff.x * diff.x + diff.y * diff.y <= maxDistance * maxDistance) {
           cluster.add(element);
           merged = true;
           break;

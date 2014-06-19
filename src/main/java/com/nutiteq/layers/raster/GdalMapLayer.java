@@ -84,7 +84,7 @@ public class GdalMapLayer extends RasterLayer {
     @SuppressWarnings("unchecked")
     public GdalMapLayer(Projection projection, int minZoom, int maxZoom,
             int id, String gdalSource, MapView mapView, boolean reproject) throws IOException {
-        super(projection, minZoom, maxZoom, id, gdalSource);
+        super(projection, minZoom, maxZoom, id);
         
         this.mapView = mapView;
         
@@ -452,11 +452,6 @@ public class GdalMapLayer extends RasterLayer {
     private boolean isSuitableZoom(double bestZoom, int zoom) {
        // return true;
        return (zoom>=(bestZoom - 5.0) && zoom<=(bestZoom + 1.0));
-    }
-
-    @Override
-    public void flush() {
-        Log.debug("GdalMapLayer flush");
     }
 
     public void close() {

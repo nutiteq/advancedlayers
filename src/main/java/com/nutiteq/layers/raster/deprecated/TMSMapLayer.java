@@ -24,6 +24,7 @@ import com.nutiteq.tasks.deprecated.NetFetchTileTask;
 public class TMSMapLayer extends RasterLayer {
     protected final String separator;
     protected final String format;
+    protected String location;
     protected boolean tmsY = false;
     private int offsetX = 0;
     private int offsetY = 0;
@@ -55,18 +56,20 @@ public class TMSMapLayer extends RasterLayer {
      */
     public TMSMapLayer(Projection projection, int minZoom, int maxZoom, int id, String baseUrl,
             String separator, String format) {
-        super(projection, minZoom, maxZoom, id, baseUrl);
+        super(projection, minZoom, maxZoom, id, baseUrl); // TODO: use constructor without baseUrl
         this.separator = separator;
         this.format = format;
+        this.location = baseUrl;
         setPersistentCaching(true);
     }
 
 
     public TMSMapLayer(Projection projection, int minZoom, int maxZoom, int id, String[] baseUrl,
             String separator, String format) {
-        super(projection, minZoom, maxZoom, id, baseUrl[0]);
+        super(projection, minZoom, maxZoom, id, baseUrl[0]); // TODO: use constructor without last argument
         this.separator = separator;
         this.format = format;
+        this.location = baseUrl[0];
         this.baseUrlSet = baseUrl;
     }
 
@@ -122,9 +125,5 @@ public class TMSMapLayer extends RasterLayer {
         url.append(format);
         String urlString = url.toString();
         executeFetchTask(new NetFetchTileTask(tile, components, tileIdOffset, urlString, this.httpHeaders, this.memoryCaching, this.persistentCaching));
-    }
-
-    @Override
-    public void flush() {
     }
 }

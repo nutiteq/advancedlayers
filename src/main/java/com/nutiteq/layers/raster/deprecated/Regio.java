@@ -10,7 +10,7 @@ import com.nutiteq.tasks.deprecated.NetFetchTileTask;
 public class Regio extends RasterLayer {
 
     public Regio(Projection projection, int minZoom, int maxZoom, int id, String location) {
-        super(projection, minZoom, maxZoom, id, location);
+        super(projection, minZoom, maxZoom, id, location); // TODO: use constructor without location
         setPersistentCaching(true);
     }
 
@@ -28,12 +28,6 @@ public class Regio extends RasterLayer {
         Log.debug(buf.toString());
 
         executeFetchTask(new NetFetchTileTask(tile, components, tileIdOffset, buf.toString(), null, memoryCaching, persistentCaching));
-    }
-
-
-    @Override
-    public void flush() {
-
     }
 
 }
