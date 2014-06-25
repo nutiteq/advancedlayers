@@ -29,12 +29,13 @@ public class GdalFetchTileTask extends FetchTileTask{
     private Dataset hDataset;
     private Envelope dataBounds;
     private MapView mapView;
+    private boolean reproject;
     private static final int TILE_SIZE = 256;
     private static final float BRIGHTNESS = 1.0f; // used for grayscale only
 
     public GdalFetchTileTask(MapTile tile, Components components,
             Envelope requestedBounds, long tileIdOffset,
-            Dataset hDataset, Envelope dataBounds, MapView mapView) {
+            Dataset hDataset, Envelope dataBounds, MapView mapView, boolean reproject) {
         super(tile, components, tileIdOffset);
         this.tile = tile;
         this.tileIdOffset = tileIdOffset;
@@ -43,6 +44,7 @@ public class GdalFetchTileTask extends FetchTileTask{
         this.dataBounds = dataBounds;
         this.components = components;
         this.mapView = mapView;
+        this.reproject = reproject;
     }
 
 
@@ -50,7 +52,7 @@ public class GdalFetchTileTask extends FetchTileTask{
     public void run() {
         super.run();
         
-        finished(getData(requestedBounds, components, tileIdOffset, hDataset, dataBounds));
+        finished(getData(requestedBounds, components, tileIdOffset, hDataset, dataBounds, reproject));
         
     }
     
@@ -80,7 +82,12 @@ public class GdalFetchTileTask extends FetchTileTask{
 
     
     public static byte[] getData(Envelope requestedBounds, Components components,
-            long tileIdOffset, Dataset hDataset, Envelope dataBounds)  {
+            long tileIdOffset, Dataset hDataset, Envelope dataBounds, boolean reproject)  {
+        
+        if(hDataset == null){
+            Log.warning("hDataset is null");
+            return null;
+        }
         
         long time = System.nanoTime();
         

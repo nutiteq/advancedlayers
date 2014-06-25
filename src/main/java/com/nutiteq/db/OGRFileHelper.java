@@ -202,7 +202,7 @@ public class OGRFileHelper {
 
         Feature feature = new Feature(layer.GetLayerDefn());
         feature.SetFID((int) id);
-        
+
         @SuppressWarnings("unchecked")
         Map<String, String> fields = (Map<String, String>) element.userData;
 

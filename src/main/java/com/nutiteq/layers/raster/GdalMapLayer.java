@@ -66,6 +66,7 @@ public class GdalMapLayer extends RasterLayer {
     Map<Envelope, Dataset> openDataSets = new HashMap<Envelope, Dataset>();
     private int counter=1;
     private boolean showAlways;
+    private static boolean reproject;
 
     /**
      * Read raster data source using GDAL library. Tested with:
@@ -87,6 +88,7 @@ public class GdalMapLayer extends RasterLayer {
         super(projection, minZoom, maxZoom, id, gdalSource); // TODO: remove last argument
         
         this.mapView = mapView;
+        this.reproject = reproject;
         
         gdal.SetConfigOption("CPL_LOG", "/sdcard/gdaldebug.log");
         gdal.SetConfigOption("CPL_DEBUG", "ON");
@@ -244,7 +246,7 @@ public class GdalMapLayer extends RasterLayer {
         if(bbox == null){
             return null;
         }
-        GdalDatasetInfo datasetInfo = new GdalDatasetInfo(datasetName, (Vector<String>) openData.GetFileList().clone(), bestZoom(bbox.getWidth(),openData.getRasterXSize()), counter++, bbox, originalBounds);
+        GdalDatasetInfo datasetInfo = new GdalDatasetInfo(datasetName, (Vector<String>) openData.GetFileList().clone(), bestZoom(bbox.getWidth(), openData.getRasterXSize()), counter++, bbox, originalBounds);
         
         openData.delete();
         
@@ -261,7 +263,7 @@ public class GdalMapLayer extends RasterLayer {
         // get original bounds
         Envelope originalBounds = bounds(originalData, null);
         Log.debug("original Bounds "+originalBounds);
-        fullGdalInfo(originalData);
+//        fullGdalInfo(originalData);
 
 //        SpatialReference fromProj = new SpatialReference(originalData.GetProjectionRef());
         
@@ -388,7 +390,7 @@ public class GdalMapLayer extends RasterLayer {
         return new Envelope(corner[1][0],corner[2][0],corner[1][1],corner[2][1]);
     }
 
-    private double[][] boundsWgs84(Dataset data,SpatialReference layerProjection) {
+    private double[][] boundsWgs84(Dataset data, SpatialReference layerProjection) {
         double[][] corners= new double[4][2];
         
         corners[0] = corner(data, layerProjection, 0.0, 0.0);
@@ -428,13 +430,13 @@ public class GdalMapLayer extends RasterLayer {
                 // lazy loading (opening) of dataset
                 if(dataSet == null){
                     Vector<String> fileName = dataSets.get(dataBounds).dataFile;
-                    dataSet = openGdalFile((String)fileName.firstElement(),true);
+                    dataSet = openGdalFile((String)fileName.firstElement(), reproject);
                     openDataSets.put(dataBounds,dataSet);
                 }
                 
                 //create task
                 GdalFetchTileTask tileTask = new GdalFetchTileTask(tile,
-                      components, requestedTileBounds, getTileIdOffset(), dataSet, boundsEnvelope, mapView);
+                      components, requestedTileBounds, getTileIdOffset(), dataSet, boundsEnvelope, mapView, reproject);
                 components.rasterTaskPool.execute(tileTask);
                 break;
             }
@@ -492,8 +494,12 @@ public class GdalMapLayer extends RasterLayer {
             dfGeoY = adfGeoTransform[3] + adfGeoTransform[4] * x
                     + adfGeoTransform[5] * y;
         }
-        
-        SpatialReference dataProj = new SpatialReference(dataProjection);
+
+        SpatialReference dataProj = new SpatialReference(EPSG_3785_WKT);
+
+        if(reproject){
+           dataProj = new SpatialReference(dataProjection);
+        }
         
         // is reprojection needed?
        // Log.debug("dataProj "+dataProj.GetAuthorityCode(null)+ " layerProj "+layerProj.GetAuthorityCode(null));
@@ -1053,14 +1059,19 @@ public class GdalMapLayer extends RasterLayer {
         if (pszProjection != null && pszProjection.length() > 0) {
             SpatialReference hProj, hLatLong = null;
 
-            hProj = new SpatialReference(pszProjection);
             
+            hProj = new SpatialReference(EPSG_3785_WKT);
+
+            if(reproject){
+              hProj = new SpatialReference(pszProjection);
+            }
+          
             // use default projection EPSG:4326
-            hLatLong = new SpatialReference("GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]]");
+            hLatLong = new SpatialReference(osr.SRS_WKT_WGS84);
 
             // force EPSG:3857 as destination projection
 //            hLatLong = new SpatialReference(EPSG_3785_WKT);
-            // hLatLong = hProj.CloneGeogCS();
+//             hLatLong = hProj.CloneGeogCS();
             
             if (hLatLong != null) {
                 gdal.PushErrorHandler( "CPLQuietErrorHandler" );
