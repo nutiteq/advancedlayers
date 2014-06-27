@@ -8,10 +8,6 @@
 
 package org.gdal.gdal;
 
-/* imports for getIndexColorModel */
-import java.awt.image.IndexColorModel;
-import java.awt.Color;
-
 public class ColorTable implements Cloneable {
   private long swigCPtr;
   protected boolean swigCMemOwn;
@@ -53,43 +49,6 @@ public class ColorTable implements Cloneable {
       return Clone();
   }
 
-/* convienance method */
-  public IndexColorModel getIndexColorModel(int bits) {
-    int size = GetCount();
-    byte[] reds = new byte[size];
-    byte[] greens = new byte[size];
-    byte[] blues = new byte[size];
-    byte[] alphas = new byte[size];
-    int noAlphas = 0;
-    int zeroAlphas = 0;
-    int lastAlphaIndex = -1;
-
-    Color entry = null;
-    for(int i = 0; i < size; i++) {
-      entry = GetColorEntry(i);
-      reds[i] = (byte)(entry.getRed()&0xff);
-      greens[i] = (byte)(entry.getGreen()&0xff);
-      blues[i] = (byte)(entry.getBlue()&0xff);
-      byte alpha = (byte)(entry.getAlpha()&0xff);
-
-      // The byte type is -128 to 127 so a normal 255 will be -1.
-      if (alpha == -1) 
-          noAlphas ++;
-      else{
-        if (alpha == 0){
-           zeroAlphas++;
-           lastAlphaIndex = i;
-        }
-      }
-      alphas[i] = alpha;
-    }
-    if (noAlphas == size)
-        return new IndexColorModel(bits, size, reds, greens, blues);
-    else if (noAlphas == (size - 1) && zeroAlphas == 1)
-        return new IndexColorModel(bits, size, reds, greens, blues, lastAlphaIndex);
-    else 
-        return new IndexColorModel(bits, size, reds, greens, blues, alphas);
- }
 
   public ColorTable(int palette) {
     this(gdalJNI.new_ColorTable__SWIG_0(palette), true);
@@ -112,15 +71,15 @@ public class ColorTable implements Cloneable {
     return gdalJNI.ColorTable_GetCount(swigCPtr, this);
   }
 
-  public java.awt.Color GetColorEntry(int entry) {
+  public int GetColorEntry(int entry) {
     return gdalJNI.ColorTable_GetColorEntry(swigCPtr, this, entry);
   }
 
-  public void SetColorEntry(int entry, java.awt.Color centry) {
+  public void SetColorEntry(int entry, int centry) {
     gdalJNI.ColorTable_SetColorEntry(swigCPtr, this, entry, centry);
   }
 
-  public void CreateColorRamp(int nStartIndex, java.awt.Color startcolor, int nEndIndex, java.awt.Color endcolor) {
+  public void CreateColorRamp(int nStartIndex, int startcolor, int nEndIndex, int endcolor) {
     gdalJNI.ColorTable_CreateColorRamp(swigCPtr, this, nStartIndex, startcolor, nEndIndex, endcolor);
   }
 

@@ -351,9 +351,9 @@ public class gdalJNI {
   public final static native long ColorTable_Clone(long jarg1, ColorTable jarg1_);
   public final static native int ColorTable_GetPaletteInterpretation(long jarg1, ColorTable jarg1_);
   public final static native int ColorTable_GetCount(long jarg1, ColorTable jarg1_);
-  public final static native java.awt.Color ColorTable_GetColorEntry(long jarg1, ColorTable jarg1_, int jarg2);
-  public final static native void ColorTable_SetColorEntry(long jarg1, ColorTable jarg1_, int jarg2, java.awt.Color jarg3);
-  public final static native void ColorTable_CreateColorRamp(long jarg1, ColorTable jarg1_, int jarg2, java.awt.Color jarg3, int jarg4, java.awt.Color jarg5);
+  public final static native int ColorTable_GetColorEntry(long jarg1, ColorTable jarg1_, int jarg2);
+  public final static native void ColorTable_SetColorEntry(long jarg1, ColorTable jarg1_, int jarg2, int jarg3);
+  public final static native void ColorTable_CreateColorRamp(long jarg1, ColorTable jarg1_, int jarg2, int jarg3, int jarg4, int jarg5);
   public final static native long new_RasterAttributeTable();
   public final static native void delete_RasterAttributeTable(long jarg1);
   public final static native long RasterAttributeTable_Clone(long jarg1, RasterAttributeTable jarg1_);
