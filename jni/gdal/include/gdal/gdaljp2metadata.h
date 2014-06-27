@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: gdaljp2metadata.h 24221 2012-04-12 20:02:38Z rouault $
+ * $Id$
  *
  * Project:  GDAL 
  * Purpose:  JP2 Box Reader (and GMLJP2 Interpreter)
@@ -7,6 +7,7 @@
  *
  ******************************************************************************
  * Copyright (c) 2005, Frank Warmerdam <warmerdam@pobox.com>
+ * Copyright (c) 2010-2013, Even Rouault <even dot rouault at mines-paris dot org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -98,6 +99,8 @@ public:
 /*                           GDALJP2Metadata                            */
 /************************************************************************/
 
+typedef struct _GDALJP2GeoTIFFBox GDALJP2GeoTIFFBox;
+
 class CPL_DLL GDALJP2Metadata
 
 {
@@ -105,8 +108,8 @@ private:
     void    CollectGMLData( GDALJP2Box * );
     int     GMLSRSLookup( const char *pszURN );
 
-    int    nGeoTIFFSize;
-    GByte  *pabyGeoTIFFData;
+    int    nGeoTIFFBoxesCount;
+    GDALJP2GeoTIFFBox  *pasGeoTIFFBoxes;
 
     int    nMSIGSize;
     GByte  *pabyMSIGData;
@@ -116,6 +119,7 @@ public:
     
     int     bHaveGeoTransform;
     double  adfGeoTransform[6];
+    int     bPixelIsPoint;
 
     char   *pszProjection;
 

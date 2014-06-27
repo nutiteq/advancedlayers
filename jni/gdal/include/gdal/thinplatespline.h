@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: thinplatespline.h 20193 2010-08-06 17:12:10Z rouault $
+ * $Id$
  *
  * Project:  GDAL Warp API
  * Purpose:  Declarations for 2D Thin Plate Spline transformer. 

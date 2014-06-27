@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: gdal_priv.h 25615 2013-02-08 22:24:32Z rouault $
+ * $Id$
  *
  * Name:     gdal_priv.h
  * Project:  GDAL Core
@@ -8,6 +8,7 @@
  *
  ******************************************************************************
  * Copyright (c) 1998, Frank Warmerdam
+ * Copyright (c) 2007-2014, Even Rouault <even dot rouault at mines-paris dot org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -112,6 +113,8 @@ class CPL_DLL GDALMajorObject
     CPLString           sDescription;
     GDALMultiDomainMetadata oMDMD;
     
+    char               **BuildMetadataDomainList(char** papszList, int bCheckNonEmpty, ...) CPL_NULL_TERMINATED;
+    
   public:
                         GDALMajorObject();
     virtual            ~GDALMajorObject();
@@ -122,6 +125,8 @@ class CPL_DLL GDALMajorObject
     virtual const char *GetDescription() const;
     virtual void        SetDescription( const char * );
 
+    virtual char      **GetMetadataDomainList();
+    
     virtual char      **GetMetadata( const char * pszDomain = "" );
     virtual CPLErr      SetMetadata( char ** papszMetadata,
                                      const char * pszDomain = "" );
@@ -294,6 +299,13 @@ class CPL_DLL GDALDataset : public GDALMajorObject
                                int, int *, int, int, int );
     void   BlockBasedFlushCache();
 
+    CPLErr ValidateRasterIOOrAdviseReadParameters(
+                               const char* pszCallingFunc,
+                               int* pbStopProcessingOnCENone,
+                               int nXOff, int nYOff, int nXSize, int nYSize,
+                               int nBufXSize, int nBufYSize, 
+                               int nBandCount, int *panBandMap);
+
     virtual int         CloseDependentDatasets();
 
     friend class GDALRasterBand;
@@ -421,6 +433,9 @@ class CPL_DLL GDALRasterBlock
     static void Verify();
 
     static int  SafeLockBlock( GDALRasterBlock ** );
+    
+    /* Should only be called by GDALDestroyDriverManager() */
+    static void DestroyRBMutex();
 };
 
 /* ******************************************************************** */
@@ -597,12 +612,17 @@ class CPL_DLL GDALRasterBand : public GDALMajorObject
     virtual CPLErr SetDefaultHistogram( double dfMin, double dfMax,
                                         int nBuckets, int *panHistogram );
 
-    virtual const GDALRasterAttributeTable *GetDefaultRAT();
+    virtual GDALRasterAttributeTable *GetDefaultRAT();
     virtual CPLErr SetDefaultRAT( const GDALRasterAttributeTable * );
 
     virtual GDALRasterBand *GetMaskBand();
     virtual int             GetMaskFlags();
     virtual CPLErr          CreateMaskBand( int nFlags );
+
+    virtual CPLVirtualMem  *GetVirtualMemAuto( GDALRWFlag eRWFlag,
+                                               int *pnPixelSpace,
+                                               GIntBig *pnLineSpace,
+                                               char **papszOptions );
 
     void ReportError(CPLErr eErrClass, int err_no, const char *fmt, ...)  CPL_PRINT_FUNC_FORMAT (4, 5);
 };
@@ -951,5 +971,18 @@ CPLErr EXIFExtractMetadata(char**& papszMetadata,
 // Number of data samples that will be used to compute approximate statistics
 // (minimum value, maximum value, etc.)
 #define GDALSTAT_APPROX_NUMSAMPLES 2500
+
+CPL_C_START
+/* Caution: for technical reason this declaration is duplicated in gdal_crs.c */
+/* so any signature change should be reflected there too */
+void GDALSerializeGCPListToXML( CPLXMLNode* psParentNode,
+                                GDAL_GCP* pasGCPList,
+                                int nGCPCount,
+                                const char* pszGCPProjection );
+void GDALDeserializeGCPListFromXML( CPLXMLNode* psGCPList,
+                                    GDAL_GCP** ppasGCPList,
+                                    int* pnGCPCount,
+                                    char** ppszGCPProjection );
+CPL_C_END
 
 #endif /* ndef GDAL_PRIV_H_INCLUDED */

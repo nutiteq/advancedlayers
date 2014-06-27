@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: gdal_vrt.h 12156 2007-09-14 14:05:58Z dron $
+ * $Id$
  *
  * Project:  Virtual GDAL Datasets
  * Purpose:  C/Public declarations of virtual GDAL dataset objects.

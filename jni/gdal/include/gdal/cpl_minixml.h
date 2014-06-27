@@ -1,5 +1,5 @@
 /**********************************************************************
- * $Id: cpl_minixml.h 25119 2012-10-13 22:38:43Z rouault $
+ * $Id$
  *
  * Project:  CPL - Common Portability Library
  * Purpose:  Declarations for MiniXML Handler.

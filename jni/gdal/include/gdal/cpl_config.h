@@ -3,13 +3,12 @@
 
 /* Define if you want to use pthreads based multiprocessing support */
 /* #undef CPL_MULTIPROC_PTHREAD */
-#define CPL_MULTIPROC_PTHREAD 1
 
 /* Define to 1 if you have the `PTHREAD_MUTEX_RECURSIVE' constant. */
 #define HAVE_PTHREAD_MUTEX_RECURSIVE 1
 
 /* --prefix directory for GDAL install */
-#define GDAL_PREFIX "/Users/ats/dev/gdal-1.10.1/external/gdal"
+#define GDAL_PREFIX "/Users/jaak/git/gdal/gdal/external/gdal"
 
 /* Define to 1 if you have the <assert.h> header file. */
 #define HAVE_ASSERT_H 1

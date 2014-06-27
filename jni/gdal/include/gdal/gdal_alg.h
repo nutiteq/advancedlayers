@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: gdal_alg.h 25741 2013-03-13 19:19:16Z ilucena $
+ * $Id$
  *
  * Project:  GDAL Image Processing Algorithms
  * Purpose:  Prototypes, and definitions for various GDAL based algorithms.

@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: cpl_minizip_zip.h 20794 2010-10-08 16:58:27Z warmerdam $
+ * $Id$
  *
  * Project:  CPL - Common Portability Library
  * Author:   Frank Warmerdam, warmerdam@pobox.com

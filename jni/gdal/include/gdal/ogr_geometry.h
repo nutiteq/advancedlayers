@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: ogr_geometry.h 25450 2013-01-04 23:15:38Z rouault $
+ * $Id$
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  Classes for manipulating simple features that is not specific
@@ -8,6 +8,7 @@
  *
  ******************************************************************************
  * Copyright (c) 1999, Frank Warmerdam
+ * Copyright (c) 2008-2014, Even Rouault <even dot rouault at mines-paris dot org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -55,6 +56,7 @@ class OGRRawPoint
 };
 
 typedef struct GEOSGeom_t *GEOSGeom;
+typedef struct GEOSContextHandle_HS *GEOSContextHandle_t;
 
 /************************************************************************/
 /*                             OGRGeometry                              */
@@ -81,6 +83,7 @@ class CPL_DLL OGRGeometry
 
   protected:
     int                   nCoordDimension;
+    int getIsoGeometryType() const;
     
   public:
                 OGRGeometry();
@@ -101,7 +104,7 @@ class CPL_DLL OGRGeometry
     // IWks Interface
     virtual int WkbSize() const = 0;
     virtual OGRErr importFromWkb( unsigned char *, int=-1 )=0;
-    virtual OGRErr exportToWkb( OGRwkbByteOrder, unsigned char * ) const = 0;
+    virtual OGRErr exportToWkb( OGRwkbByteOrder, unsigned char *, OGRwkbVariant=wkbVariantOgc ) const = 0;
     virtual OGRErr importFromWkt( char ** ppszInput ) = 0;
     virtual OGRErr exportToWkt( char ** ppszDstText ) const = 0;
     
@@ -113,7 +116,11 @@ class CPL_DLL OGRGeometry
     virtual char * exportToGML( const char* const * papszOptions = NULL ) const;
 	virtual char * exportToKML() const;
     virtual char * exportToJson() const;
-    virtual GEOSGeom exportToGEOS() const;
+
+    static GEOSContextHandle_t createGEOSContext();
+    static void freeGEOSContext(GEOSContextHandle_t hGEOSCtxt);
+    virtual GEOSGeom exportToGEOS(GEOSContextHandle_t hGEOSCtxt) const;
+
     virtual void closeRings();
 
     virtual void setCoordinateDimension( int nDimension ); 
@@ -189,7 +196,7 @@ class CPL_DLL OGRPoint : public OGRGeometry
     // IWks Interface
     virtual int WkbSize() const;
     virtual OGRErr importFromWkb( unsigned char *, int=-1 );
-    virtual OGRErr exportToWkb( OGRwkbByteOrder, unsigned char * ) const;
+    virtual OGRErr exportToWkb( OGRwkbByteOrder, unsigned char *, OGRwkbVariant=wkbVariantOgc ) const;
     virtual OGRErr importFromWkt( char ** );
     virtual OGRErr exportToWkt( char ** ppszDstText ) const;
     
@@ -271,7 +278,7 @@ class CPL_DLL OGRLineString : public OGRCurve
     // IWks Interface
     virtual int WkbSize() const;
     virtual OGRErr importFromWkb( unsigned char *, int = -1 );
-    virtual OGRErr exportToWkb( OGRwkbByteOrder, unsigned char * ) const;
+    virtual OGRErr exportToWkb( OGRwkbByteOrder, unsigned char *, OGRwkbVariant=wkbVariantOgc ) const;
     virtual OGRErr importFromWkt( char ** );
     virtual OGRErr exportToWkt( char ** ppszDstText ) const;
 
@@ -288,6 +295,8 @@ class CPL_DLL OGRLineString : public OGRCurve
     virtual void StartPoint(OGRPoint *) const;
     virtual void EndPoint(OGRPoint *) const;
     virtual void Value( double, OGRPoint * ) const;
+    virtual double Project(const OGRPoint *) const;
+    virtual OGRLineString* getSubLine(double, double, int) const;
     
     // ILineString methods
     int         getNumPoints() const { return nPointCount; }
@@ -301,9 +310,10 @@ class CPL_DLL OGRLineString : public OGRCurve
     
     // non standard.
     virtual void setCoordinateDimension( int nDimension ); 
-    void        setNumPoints( int );
+    void        setNumPoints( int nNewPointCount, int bZeroizeNewContent = TRUE );
     void        setPoint( int, OGRPoint * );
     void        setPoint( int, double, double );
+    void        setZ( int, double );
     void        setPoint( int, double, double, double );
     void        setPoints( int, OGRRawPoint *, double * = NULL );
     void        setPoints( int, double * padfX, double * padfY,
@@ -385,7 +395,7 @@ class CPL_DLL OGRLinearRing : public OGRLineString
     // object cant be serialized on its own. 
     virtual int WkbSize() const;
     virtual OGRErr importFromWkb( unsigned char *, int=-1 );
-    virtual OGRErr exportToWkb( OGRwkbByteOrder, unsigned char * ) const;
+    virtual OGRErr exportToWkb( OGRwkbByteOrder, unsigned char *, OGRwkbVariant=wkbVariantOgc ) const;
 };
 
 /************************************************************************/
@@ -442,7 +452,7 @@ class CPL_DLL OGRPolygon : public OGRSurface
     // IWks Interface
     virtual int WkbSize() const;
     virtual OGRErr importFromWkb( unsigned char *, int = -1 );
-    virtual OGRErr exportToWkb( OGRwkbByteOrder, unsigned char * ) const;
+    virtual OGRErr exportToWkb( OGRwkbByteOrder, unsigned char *, OGRwkbVariant=wkbVariantOgc ) const;
     virtual OGRErr importFromWkt( char ** );
     virtual OGRErr exportToWkt( char ** ppszDstText ) const;
 
@@ -465,6 +475,9 @@ class CPL_DLL OGRPolygon : public OGRSurface
     int         getNumInteriorRings() const;
     OGRLinearRing *getInteriorRing( int );
     const OGRLinearRing *getInteriorRing( int ) const;
+
+    OGRLinearRing *stealExteriorRing();
+    OGRLinearRing *stealInteriorRing(int);
 
     OGRBoolean IsPointOnSurface( const OGRPoint * ) const;
 
@@ -509,7 +522,7 @@ class CPL_DLL OGRGeometryCollection : public OGRGeometry
     // IWks Interface
     virtual int WkbSize() const;
     virtual OGRErr importFromWkb( unsigned char *, int = -1 );
-    virtual OGRErr exportToWkb( OGRwkbByteOrder, unsigned char * ) const;
+    virtual OGRErr exportToWkb( OGRwkbByteOrder, unsigned char *, OGRwkbVariant=wkbVariantOgc ) const;
     virtual OGRErr importFromWkt( char ** );
     virtual OGRErr exportToWkt( char ** ppszDstText ) const;
 
@@ -652,7 +665,7 @@ class CPL_DLL OGRGeometryFactory
     static OGRErr createFromFgf( unsigned char *, OGRSpatialReference *,
                                  OGRGeometry **, int = -1, int * = NULL );
     static OGRGeometry *createFromGML( const char * );
-    static OGRGeometry *createFromGEOS( GEOSGeom );
+    static OGRGeometry *createFromGEOS( GEOSContextHandle_t hGEOSCtxt, GEOSGeom );
 
     static void   destroyGeometry( OGRGeometry * );
     static OGRGeometry *createGeometry( OGRwkbGeometryType );
@@ -667,9 +680,6 @@ class CPL_DLL OGRGeometryFactory
                                            int nPolygonCount,
                                            int *pbResultValidGeometry,
                                            const char **papszOptions = NULL);
-
-    static void *getGEOSGeometryFactory();
-
     static int haveGEOS();
 
     static OGRGeometry* transformWithOptions( const OGRGeometry* poSrcGeom,

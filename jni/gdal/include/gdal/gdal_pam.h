@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: gdal_pam.h 22920 2011-08-10 21:08:07Z rouault $
+ * $Id$
  *
  * Project:  GDAL Core
  * Purpose:  Declaration for Peristable Auxilary Metadata classes.
@@ -281,7 +281,7 @@ class CPL_DLL GDALPamRasterBand : public GDALRasterBand
                                          const char * pszValue,
                                          const char * pszDomain = "" );
 
-    virtual const GDALRasterAttributeTable *GetDefaultRAT();
+    virtual GDALRasterAttributeTable *GetDefaultRAT();
     virtual CPLErr SetDefaultRAT( const GDALRasterAttributeTable * );
 
     // new in GDALPamRasterBand. 

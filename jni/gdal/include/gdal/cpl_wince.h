@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: cpl_wince.h 10645 2007-01-18 02:22:39Z warmerdam $
+ * $Id$
  *
  * Name:     cpl_win_api.h
  * Project:  CPL - Common Portability Library

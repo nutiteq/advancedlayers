@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: gdalwarper.h 25884 2013-04-09 17:04:16Z etourigny $
+ * $Id$
  *
  * Project:  GDAL High Performance Warper
  * Purpose:  Prototypes, and definitions for warping related work.

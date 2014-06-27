@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: cpl_csv.h 16759 2009-04-09 21:32:43Z rouault $
+ * $Id$
  *
  * Project:  Common Portability Library
  * Purpose:  Functions for reading and scaning CSV (comma separated,
