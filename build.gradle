@@ -49,7 +49,7 @@ tasks.withType(com.android.build.gradle.tasks.PackageApplication) { pkgTask ->
 
 dependencies {
 //    compile fileTree(dir: 'libs', includes: ['*.jar'])
-    compile "com.nutiteq:nutiteq-3d-sdk:2.3.1"
+    compile "com.nutiteq:nutiteq-3d-sdk:2.3.2"
     compile "com.google.code.gson:gson:2.2.3"
     compile "com.jhlabs:javaproj-noawt:1.0.7"
     compile "com.google.protobuf:protobuf-java:2.4.1"
