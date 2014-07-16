@@ -8,6 +8,7 @@
  *
  ******************************************************************************
  * Copyright (c) 2008, Andrey Kiselev <dron@ak4719.spb.edu>
+ * Copyright (c) 2010-2013, Even Rouault <even dot rouault at mines-paris dot org>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -42,6 +43,11 @@ typedef enum {
     /*! Use value form the M value */    GBV_M = 2
 } GDALBurnValueSrc;
 
+typedef enum {
+    GRMA_Replace = 0,
+    GRMA_Add = 1,
+} GDALRasterMergeAlg;
+
 typedef struct {
     unsigned char * pabyChunkBuf;
     int nXSize;
@@ -50,6 +56,7 @@ typedef struct {
     GDALDataType eType;
     double *padfBurnValue;
     GDALBurnValueSrc eBurnValueSource;
+    GDALRasterMergeAlg eMergeAlg;
 } GDALRasterizeInfo;
 
 /************************************************************************/
@@ -170,6 +177,8 @@ void* GDALCloneGenImgProjTransformer( void *pTransformArg );
 void* GDALCloneApproxTransformer( void *pTransformArg );
 /* TODO : GDALCloneGeoLocTransformer? , GDALCloneRPCTransformer? */ 
 
+void* GDALCreateTPSTransformerInt( int nGCPCount, const GDAL_GCP *pasGCPList, 
+                                   int bReversed, char** papszOptions );
 
 void CPL_DLL * GDALCloneTransformer( void *pTranformerArg );
 
