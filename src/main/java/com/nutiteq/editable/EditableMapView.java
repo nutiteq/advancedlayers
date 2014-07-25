@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
+import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
@@ -160,29 +161,70 @@ public class EditableMapView extends MapView {
 
 		public EditMapListener() {
 		}
+		
+		@Override
+		public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+			if (mapListener != null) {
+				mapListener.onSurfaceCreated(gl, config);
+			}
+		}
 
 		@Override
 		public void onSurfaceChanged(GL10 gl, int width, int height) {
+			if (mapListener != null) {
+				mapListener.onSurfaceChanged(gl, width, height);
+			}
+		}
+		
+		@Override
+		public void onDrawFrame(GL10 gl) {
+			if (mapListener != null) {
+				mapListener.onDrawFrame(gl);
+			}
 		}
 
 		@Override
 		public void onDrawFrameAfter3D(GL10 gl, float zoomPow2) {
+			if (mapListener != null) {
+				mapListener.onDrawFrameAfter3D(gl, zoomPow2);
+			}
 		}
 
 		@Override
 		public void onDrawFrameBefore3D(GL10 gl, float zoomPow2) {
+			if (mapListener != null) {
+				mapListener.onDrawFrameBefore3D(gl, zoomPow2);
+			}
 		}
 
 		@Override
 		public void onLabelClicked(VectorElement vectorElement, boolean longClick) {
+			if (mapListener != null) {
+				mapListener.onLabelClicked(vectorElement, longClick);
+			}
+		}
+		
+		@Override
+		public boolean showLabelOnVectorElementClick(VectorElement vectorElement, boolean longClick) {
+			if (vectorElement.getLayer() == overlayLayer) {
+				return false;
+			}
+			if (mapListener != null) {
+				return mapListener.showLabelOnVectorElementClick(vectorElement, longClick);
+			}
+			return super.showLabelOnVectorElementClick(vectorElement, longClick);
 		}
 
 		@Override
 		public void onVectorElementClicked(VectorElement vectorElement, double x, double y, boolean longClick) {
-			if (vectorElement.getLayer() != overlayLayer) {
-				selectElement(vectorElement);
-				initialElementDragPos = new MapPos(x, y);
-				saveElementPos(vectorElement);
+			if (vectorElement.getLayer() == overlayLayer) {
+				return;
+			}
+			selectElement(vectorElement);
+			initialElementDragPos = new MapPos(x, y);
+			saveElementPos(vectorElement);
+			if (mapListener != null) {
+				mapListener.onVectorElementClicked(vectorElement, x, y, longClick);
 			}
 		}
 
@@ -191,10 +233,30 @@ public class EditableMapView extends MapView {
 			if (initialElementDragPos == null) {
 				selectElement(null);
 			}
+			if (mapListener != null) {
+				mapListener.onMapClicked(x, y, longClick);
+			}
 		}
 
 		@Override
 		public void onMapMoved() {
+			if (mapListener != null) {
+				mapListener.onMapMoved();
+			}
+		}
+		
+		@Override
+		public void onBackgroundTasksStarted() {
+			if (mapListener != null) {
+				mapListener.onBackgroundTasksStarted();
+			}
+		}
+			
+		@Override
+		public void onBackgroundTasksFinished() {
+			if (mapListener != null) {
+				mapListener.onBackgroundTasksFinished();
+			}
 		}
 	}
 
