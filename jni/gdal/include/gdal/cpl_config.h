@@ -3,6 +3,7 @@
 
 /* Define if you want to use pthreads based multiprocessing support */
 /* #undef CPL_MULTIPROC_PTHREAD */
+#define CPL_MULTIPROC_PTHREAD 1
 
 /* Define to 1 if you have the `PTHREAD_MUTEX_RECURSIVE' constant. */
 #define HAVE_PTHREAD_MUTEX_RECURSIVE 1
