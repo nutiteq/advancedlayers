@@ -175,7 +175,9 @@ public class OGRFileHelper {
     }
     
     public long insertElement(com.nutiteq.geometry.Geometry element) {
-        
+        if (transformNeeded) {
+        	element = untransformElement(element);
+        }
         String wktGeom = WktWriter.writeWkt(element, getGeometryType(element));
         
         Feature feature = new Feature(layer.GetLayerDefn());
@@ -197,7 +199,9 @@ public class OGRFileHelper {
     }
     
     public void updateElement(long id, com.nutiteq.geometry.Geometry element) {
-
+        if (transformNeeded) {
+        	element = untransformElement(element);
+        }
         String wktGeom = WktWriter.writeWkt(element, getGeometryType(element));
 
         Feature feature = new Feature(layer.GetLayerDefn());
@@ -260,6 +264,32 @@ public class OGRFileHelper {
         }
         
         return new MapPos(transPoint[0], transPoint[1]);
+    }
+    
+    private com.nutiteq.geometry.Geometry untransformElement(com.nutiteq.geometry.Geometry element) {
+    	com.nutiteq.geometry.Geometry transformedElement = null;
+        if(element instanceof com.nutiteq.geometry.Point){
+        	com.nutiteq.geometry.Point point = (com.nutiteq.geometry.Point) element;
+        	MapPos mapPos = transformPoint(point.getMapPos(), transformerToData);
+        	transformedElement = new com.nutiteq.geometry.Point(mapPos, null, (com.nutiteq.style.PointStyle) null, null);
+        }else if(element instanceof Line){
+        	com.nutiteq.geometry.Line line = (com.nutiteq.geometry.Line) element;
+        	List<MapPos> mapPoses = transformPointList(line.getVertexList(), transformerToData);
+        	transformedElement = new com.nutiteq.geometry.Line(mapPoses, null, (com.nutiteq.style.LineStyle) null, null);
+        }else if(element instanceof Polygon){
+        	com.nutiteq.geometry.Polygon polygon = (com.nutiteq.geometry.Polygon) element;
+        	List<MapPos> mapPoses = transformPointList(polygon.getVertexList(), transformerToData);
+        	List<List<MapPos>> holeList = null;
+        	if (polygon.getHolePolygonList() != null) {
+        		holeList = transformPointListList(polygon.getHolePolygonList(), transformerToData);
+        	}
+        	transformedElement = new com.nutiteq.geometry.Polygon(mapPoses, holeList, null, (com.nutiteq.style.PolygonStyle) null, null);
+        }
+        if (transformedElement != null) {
+        	transformedElement.setId(element.getId());
+        	transformedElement.userData = element.userData;
+        }
+        return transformedElement;
     }
     
     private String[] getFieldNames(Layer layer) {
