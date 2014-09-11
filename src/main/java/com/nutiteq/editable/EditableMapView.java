@@ -260,6 +260,7 @@ public class EditableMapView extends MapView {
 		}
 	}
 
+	private int startMappingCounter = 0;
 	private MapListener mapListener;
 	private EditEventListener editEventListener;
 
@@ -860,7 +861,7 @@ public class EditableMapView extends MapView {
 	@Override
 	public void startMapping() {
 		super.startMapping();
-		if (mapListener == null) {
+		if (startMappingCounter++ == 0) {
 			mapListener = getOptions().getMapListener();
 			getOptions().setMapListener(new EditMapListener());
 		}
@@ -868,18 +869,18 @@ public class EditableMapView extends MapView {
 
 	@Override
 	public void stopMapping() {
-		if (overlayLayer != null) {
-			getLayers().removeLayer(overlayLayer);
-			overlayLayer = null;
-		}
-		overlayPoints.clear();
-		dragMode = false;
-		dragPoint = null;
-		initialElementDragPos = null;
-		initialElementPoses = null;
-		if (mapListener != null) {
+		if (--startMappingCounter == 0) {
 			getOptions().setMapListener(mapListener);
 			mapListener = null;
+			if (overlayLayer != null) {
+				getLayers().removeLayer(overlayLayer);
+				overlayLayer = null;
+			}
+			overlayPoints.clear();
+			dragMode = false;
+			dragPoint = null;
+			initialElementDragPos = null;
+			initialElementPoses = null;
 		}
 		super.stopMapping();
 	}
