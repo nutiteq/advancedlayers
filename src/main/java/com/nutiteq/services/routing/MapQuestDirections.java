@@ -21,6 +21,7 @@ import com.nutiteq.geometry.Line;
 import com.nutiteq.geometry.Marker;
 import com.nutiteq.log.Log;
 import com.nutiteq.projections.Projection;
+import com.nutiteq.style.LabelStyle;
 import com.nutiteq.style.LineStyle;
 import com.nutiteq.style.MarkerStyle;
 import com.nutiteq.style.StyleSet;
@@ -50,6 +51,8 @@ public class MapQuestDirections  {
 
   private RouteInstruction[] instructions;
 
+  private LabelStyle labelStyle;
+
   /**
    * @param routeActivity listener for directions result (callback)
    * @param start start point, in Wgs84
@@ -59,7 +62,7 @@ public class MapQuestDirections  {
    */
   public MapQuestDirections(final RouteActivity routeActivity, final MapPos start,
       final MapPos end, final Map<String,String> routeParameters, final String apiKey, 
-      Projection projection, StyleSet<LineStyle> lineStyleSet) {
+      Projection projection, StyleSet<LineStyle> lineStyleSet, LabelStyle labelStyle) {
     this.routeActivity = routeActivity;
     this.start = start;
     this.end = end;
@@ -67,6 +70,7 @@ public class MapQuestDirections  {
     this.apiKey = apiKey;
     this.projection = projection;
     this.lineStyleSet = lineStyleSet;
+    this.labelStyle = labelStyle;
     
     this.iconUrls = new SparseArray<String>();
     
@@ -116,10 +120,12 @@ public class MapQuestDirections  {
 
       private MarkerLayer markerLayer;
       private float markerSize;
-
-      public MqLoadInstructionImagesTask(MarkerLayer markerLayer, float markerSize){
+      private LabelStyle labelStyle;
+      
+      public MqLoadInstructionImagesTask(MarkerLayer markerLayer, float markerSize, LabelStyle labelStyle){
           this.markerLayer = markerLayer;
           this.markerSize = markerSize;
+          this.labelStyle = labelStyle;
       }
       
       protected ArrayList<Marker> doInBackground(Void... mapPos) {
@@ -137,7 +143,7 @@ public class MapQuestDirections  {
               MarkerStyle markerStyle = MarkerStyle.builder().setBitmap(bitMap).setSize(markerSize).build();
               
               routePointMarkers.add(new Marker(current.getPoint(), new DefaultLabel(current.getInstructionNumber()+"."+current
-                  .getInstruction(),"Distance: "+current.getDistance()+" time: "+current.getDuration()), markerStyle, current));
+                  .getInstruction(),"Distance: "+current.getDistance()+" time: "+current.getDuration(), labelStyle), markerStyle, current));
             }
          return routePointMarkers;
       }
@@ -220,7 +226,7 @@ public class MapQuestDirections  {
             return new Route(null, null, null, Route.ROUTE_RESULT_NO_ROUTE);
         }
         
-        return new Route(summary, new Line(wayPoints, new DefaultLabel("Route", summary.toString()), lineStyleSet, summary), instructions, Route.ROUTE_RESULT_OK);
+        return new Route(summary, new Line(wayPoints, new DefaultLabel("Route", summary.toString(), labelStyle), lineStyleSet, summary), instructions, Route.ROUTE_RESULT_OK);
 
     } catch (JSONException e) {
         Log.error("JSON parsing error "+e.getMessage());
@@ -250,15 +256,15 @@ public class MapQuestDirections  {
       final RouteInstruction current = instructions[i];
       MarkerStyle markerStyle = MarkerStyle.builder().setBitmap(routeImages[current.getInstructionType()]).setSize(imageSize).build();
       routePointMarkers.add(new Marker(current.getPoint(), new DefaultLabel("Step "+current.getInstructionNumber(),current
-          .getInstruction()), markerStyle, current));
+          .getInstruction(), labelStyle), markerStyle, current));
     }
 
     return routePointMarkers;
   }
   
   public void startRoutePointMarkerLoading(MarkerLayer markerLayer,
-        float markerSize) {
-    new MqLoadInstructionImagesTask(markerLayer, markerSize).execute();
+        float markerSize, LabelStyle labelStyle) {
+    new MqLoadInstructionImagesTask(markerLayer, markerSize, labelStyle).execute();
     
   }
   
