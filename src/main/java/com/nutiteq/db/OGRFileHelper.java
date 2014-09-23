@@ -104,23 +104,25 @@ public class OGRFileHelper {
     public List<com.nutiteq.geometry.Geometry> loadData(Envelope envelope, GeometryFactory geomFactory) {
         long timeStart = System.currentTimeMillis();
 
-        if (transformNeeded) {
-            MutableEnvelope mutableEnv = new MutableEnvelope();
-            for (MapPos mapPos : envelope.getConvexHull()) {
-                // conversion needed from layer projection to data projection, to apply the filter
-                mutableEnv.add(transformPoint(mapPos, transformerToData));
+        if(envelope != null){
+            if (transformNeeded) {
+                MutableEnvelope mutableEnv = new MutableEnvelope();
+                for (MapPos mapPos : envelope.getConvexHull()) {
+                    // conversion needed from layer projection to data projection, to apply the filter
+                    mutableEnv.add(transformPoint(mapPos, transformerToData));
+                }
+                envelope = new Envelope(mutableEnv);
             }
-            envelope = new Envelope(mutableEnv);
-        }
 
-        MapPos minPos = new MapPos(envelope.minX, envelope.minY);
-        MapPos maxPos = new MapPos(envelope.maxX, envelope.maxY);
-        Log.debug("filter: "+minPos+" - "+maxPos);
-        
-        layer.SetSpatialFilterRect(
-                Math.min(minPos.x, maxPos.x), Math.min(minPos.y, maxPos.y),
-                Math.max(minPos.x, maxPos.x), Math.max(minPos.y, maxPos.y)
-            );
+            MapPos minPos = new MapPos(envelope.minX, envelope.minY);
+            MapPos maxPos = new MapPos(envelope.maxX, envelope.maxY);
+            Log.debug("filter: "+minPos+" - "+maxPos);
+            
+            layer.SetSpatialFilterRect(
+                    Math.min(minPos.x, maxPos.x), Math.min(minPos.y, maxPos.y),
+                    Math.max(minPos.x, maxPos.x), Math.max(minPos.y, maxPos.y)
+                );
+        }
 
         List<com.nutiteq.geometry.Geometry> elementList = new LinkedList<com.nutiteq.geometry.Geometry>();
 

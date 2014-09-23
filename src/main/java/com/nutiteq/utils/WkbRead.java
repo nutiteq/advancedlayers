@@ -92,10 +92,16 @@ public class WkbRead {
 			dimensions  = 3;
 		}
 
+        boolean hasM = ((type & 0x40000000) != 0);
+        if(hasM){
+            Log.debug("M dimension found but ignored now");
+        }
+		
 		boolean hasSRID = ((type & 0x20000000) != 0);
 		int srid = 0;
 		if (hasSRID){
 			srid = readInt(is,endian); // read SRID
+			Log.debug("SRID found but ignored: "+srid);
 		}
 
 		Geometry[] result = null;

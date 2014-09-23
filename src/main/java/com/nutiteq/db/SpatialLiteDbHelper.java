@@ -291,7 +291,9 @@ public class SpatialLiteDbHelper {
                 }
 
                 // second column is geometry
-                ByteArrayInputStream inputStream = new ByteArrayInputStream(Utils.hexStringToByteArray(rowdata[1]));
+//                Log.debug("ewkb:"+rowdata[1]);
+                String[] data = rowdata[1].split(";"); // data[0] - SRID, data[1] - wkb hex
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(Utils.hexStringToByteArray(data[1]));
                 Geometry[] wkbGeomList = WkbRead.readWkb(inputStream, geomFactory, userData);
                 for (Geometry geom : wkbGeomList) {
                     geom.setId(id);
@@ -350,11 +352,11 @@ public class SpatialLiteDbHelper {
         
         String qry;
         if (!dbLayer.spatialIndex) {
-            qry = "SELECT rowid, HEX(AsBinary(" + geomCol + ")) " + userColumn
+            qry = "SELECT rowid, AsEWKB(" + geomCol + ") " + userColumn
                     + " FROM \"" + dbLayer.table + "\" WHERE " + filterSql + noIndexWhere
                     + " LIMIT " + limit + ";";
         } else {
-            qry = "SELECT rowid, HEX(AsBinary(" + geomCol + ")) " + userColumn
+            qry = "SELECT rowid, AsEWKB(" + geomCol + ") " + userColumn
                     + " FROM \"" + dbLayer.table
                     + "\" WHERE " + filterSql + " ROWID IN (select pkid from idx_"
                     + dbLayer.table + "_" + dbLayer.geomColumn
