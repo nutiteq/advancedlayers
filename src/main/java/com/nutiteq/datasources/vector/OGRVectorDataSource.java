@@ -83,19 +83,19 @@ public abstract class OGRVectorDataSource extends AbstractVectorDataSource<Geome
      * 
      * @param maxElements maximum objects
      */
-    public void setMaxElements(int maxElements) {
+    public synchronized void setMaxElements(int maxElements) {
         ogrHelper.setMaxElements(maxElements);
 
         notifyElementsChanged();
     }
 
     @Override
-    public Envelope getDataExtent() {
+    public synchronized Envelope getDataExtent() {
         return ogrHelper.getDataExtent();
     }
 
     @Override
-    public Collection<Geometry> loadElements(final CullState cullState) {
+    public synchronized Collection<Geometry> loadElements(final CullState cullState) {
         Envelope envelope = projection.fromInternal(cullState.envelope);
 
         // Create WKB geometry factory

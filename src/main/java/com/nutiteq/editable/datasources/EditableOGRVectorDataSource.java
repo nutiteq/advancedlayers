@@ -28,17 +28,17 @@ public abstract class EditableOGRVectorDataSource extends OGRVectorDataSource im
     }
 
     @Override
-    public long insertElement(Geometry element) {
+    public synchronized long insertElement(Geometry element) {
         return ogrHelper.insertElement(element);      
     }
 
     @Override
-    public void updateElement(long id, Geometry element) {
+    public synchronized void updateElement(long id, Geometry element) {
         ogrHelper.updateElement(id, element);
     }
 
     @Override
-    public void deleteElement(long id) {
+    public synchronized void deleteElement(long id) {
         ogrHelper.deleteElement(id);
     }
 
