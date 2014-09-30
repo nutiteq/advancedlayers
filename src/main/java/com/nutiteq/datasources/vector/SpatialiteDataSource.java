@@ -30,7 +30,7 @@ import com.nutiteq.vectordatasources.AbstractVectorDataSource;
  * @author mark
  *
  */
-public abstract class SpatialiteDataSource extends AbstractVectorDataSource<Geometry> {
+public abstract class SpatialiteDataSource extends AbstractVectorDataSource<Geometry> implements QueryableVectorDataSource<Geometry> {
     protected final SpatialLiteDbHelper spatialLite;
     protected SpatialLiteDbHelper.DbLayer dbLayer;
 
@@ -127,13 +127,31 @@ public abstract class SpatialiteDataSource extends AbstractVectorDataSource<Geom
     }
 
     @Override
-    public Collection<Geometry> loadElements(final CullState cullState) {
+    public Collection<Geometry> loadElements(CullState cullState) {
         if (dbLayer == null) {
             return null;
         }
 
         Envelope envelope = projection.fromInternal(cullState.envelope);
 
+        // Perform the query
+        List<Geometry> elements = spatialLite.qrySpatiaLiteGeom(envelope, maxElements, dbLayer, userColumns, filter, autoSimplifyPixels, screenWidth, createGeometryFactory(cullState.zoom));
+        for (Geometry element : elements) {
+            element.attachToDataSource(this);
+        }
+        return elements;
+    }
+    
+    @Override
+    public Collection<Geometry> queryElements(String filter) {
+        if (dbLayer == null) {
+            return null;
+        }
+        
+        return spatialLite.qrySpatiaLiteGeom(null, Integer.MAX_VALUE, dbLayer, userColumns, filter, autoSimplifyPixels, screenWidth, createGeometryFactory(0));
+    }
+    
+    protected GeometryFactory createGeometryFactory(final int zoom) {
         // Create WKB geometry factory
         GeometryFactory geomFactory = new GeometryFactory() {
 
@@ -141,21 +159,21 @@ public abstract class SpatialiteDataSource extends AbstractVectorDataSource<Geom
             @Override
             public Point createPoint(MapPos mapPos, Object userData) {
                 Label label = createLabel((Map<String, String>) userData);
-                return new Point(mapPos, label, createPointStyleSet((Map<String, String>) userData, cullState.zoom), userData);
+                return new Point(mapPos, label, createPointStyleSet((Map<String, String>) userData, zoom), userData);
             }
 
             @SuppressWarnings("unchecked")
             @Override
             public Line createLine(List<MapPos> points, Object userData) {
                 Label label = createLabel((Map<String, String>) userData);
-                return new Line(points, label, createLineStyleSet((Map<String, String>) userData, cullState.zoom), userData);
+                return new Line(points, label, createLineStyleSet((Map<String, String>) userData, zoom), userData);
             }
 
             @SuppressWarnings("unchecked")
             @Override
             public Polygon createPolygon(List<MapPos> outerRing, List<List<MapPos>> innerRings, Object userData) {
                 Label label = createLabel((Map<String, String>) userData);
-                return new Polygon(outerRing, innerRings, label, createPolygonStyleSet((Map<String, String>) userData, cullState.zoom), userData);
+                return new Polygon(outerRing, innerRings, label, createPolygonStyleSet((Map<String, String>) userData, zoom), userData);
             }
 
             @Override
@@ -165,12 +183,7 @@ public abstract class SpatialiteDataSource extends AbstractVectorDataSource<Geom
 
         };
         
-        // Perform the query
-        List<Geometry> elements = spatialLite.qrySpatiaLiteGeom(envelope, maxElements, dbLayer, userColumns, filter, autoSimplifyPixels, screenWidth, geomFactory);
-        for (Geometry element : elements) {
-            element.attachToDataSource(this);
-        }
-        return elements;
+        return geomFactory;
     }
 
     protected abstract Label createLabel(Map<String, String> userData);

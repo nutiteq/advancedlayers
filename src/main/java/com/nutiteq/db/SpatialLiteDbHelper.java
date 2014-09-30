@@ -314,7 +314,7 @@ public class SpatialLiteDbHelper {
         String geomCol = dbLayer.geomColumn;
         Envelope queryBbox;
 
-        if (dbLayer.srid != SDK_SRID) {
+        if (dbLayer.srid != SDK_SRID && bbox != null) {
             Log.debug("SpatialLite: Data must be transformed from " + SDK_SRID
                     + " to " + dbLayer.srid);
             geomCol = "Transform(" + dbLayer.geomColumn + "," + SDK_SRID + ")";
@@ -330,7 +330,7 @@ public class SpatialLiteDbHelper {
         }
         
         // simplify geometries
-        if(autoSimplifyPixels > 0){
+        if(autoSimplifyPixels > 0 && bbox != null){
             double zoomRange = bbox.maxX-bbox.minX; // map width in mercator meters
             double width = 1000; // roughly 1000 pixels screen
 
@@ -344,26 +344,29 @@ public class SpatialLiteDbHelper {
         }
 
 
-        String noIndexWhere = "MBRIntersects(BuildMBR(" + queryBbox.getMinX()
-                + "," + queryBbox.getMinY() + "," + queryBbox.getMaxX() + ","
-                + queryBbox.getMaxY() + ")," + dbLayer.geomColumn + ")";
-
         String filterSql = (filter == null) ? "" : filter + " AND ";
         
         String qry;
-        if (!dbLayer.spatialIndex) {
-            qry = "SELECT rowid, AsEWKB(" + geomCol + ") " + userColumn
-                    + " FROM \"" + dbLayer.table + "\" WHERE " + filterSql + noIndexWhere
-                    + " LIMIT " + limit + ";";
-        } else {
+        if (dbLayer.spatialIndex && queryBbox != null) {
             qry = "SELECT rowid, AsEWKB(" + geomCol + ") " + userColumn
                     + " FROM \"" + dbLayer.table
                     + "\" WHERE " + filterSql + " ROWID IN (select pkid from idx_"
                     + dbLayer.table + "_" + dbLayer.geomColumn
                     + " where pkid MATCH RtreeIntersects("
-                    + +queryBbox.getMinX() + "," + queryBbox.getMinY() + ","
-                    + queryBbox.getMaxX() + "," + queryBbox.getMaxY()
-                    + ")) LIMIT " + limit;
+                    + queryBbox.getMinX() + "," + queryBbox.getMinY() + ","
+                    + queryBbox.getMaxX() + "," + queryBbox.getMaxY() + ")) LIMIT " + limit;
+        } else {
+            String noIndexWhere = "1=1";
+            if (queryBbox != null) {
+                noIndexWhere = "MBRIntersects(BuildMBR("
+                    + queryBbox.getMinX() + "," + queryBbox.getMinY() + ","
+                    + queryBbox.getMaxX() + "," + queryBbox.getMaxY() + ")," + dbLayer.geomColumn + ")";
+            }
+
+            qry = "SELECT rowid, AsEWKB(" + geomCol + ") " + userColumn
+                    + " FROM \"" + dbLayer.table
+                    + "\" WHERE " + filterSql + noIndexWhere
+                    + " LIMIT " + limit;
         }
 
         Log.debug(qry);

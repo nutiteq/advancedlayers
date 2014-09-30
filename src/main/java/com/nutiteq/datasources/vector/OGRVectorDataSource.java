@@ -31,7 +31,7 @@ import com.nutiteq.vectordatasources.AbstractVectorDataSource;
  * @author jaak
  *
  */
-public abstract class OGRVectorDataSource extends AbstractVectorDataSource<Geometry> {
+public abstract class OGRVectorDataSource extends AbstractVectorDataSource<Geometry> implements QueryableVectorDataSource<Geometry> {
 
     protected final OGRFileHelper ogrHelper;
 
@@ -95,45 +95,51 @@ public abstract class OGRVectorDataSource extends AbstractVectorDataSource<Geome
     }
 
     @Override
-    public synchronized Collection<Geometry> loadElements(final CullState cullState) {
+    public synchronized Collection<Geometry> loadElements(CullState cullState) {
         Envelope envelope = projection.fromInternal(cullState.envelope);
 
-        // Create WKB geometry factory
+        List<Geometry> elements = ogrHelper.loadData(envelope, createGeometryFactory(cullState.zoom));
+        for (Geometry element : elements) {
+            element.attachToDataSource(this);
+        }
+        return elements;
+    }
+    
+    @Override
+    public synchronized Collection<Geometry> queryElements(String filter) {
+        return ogrHelper.queryData(filter, createGeometryFactory(0)); 
+    }
+    
+    protected GeometryFactory createGeometryFactory(final int zoom) {
         GeometryFactory geomFactory = new GeometryFactory() {
-
             @SuppressWarnings("unchecked")
             @Override
             public Point createPoint(MapPos mapPos, Object userData) {
                 Label label = createLabel((Map<String, String>) userData);
-                return new Point(mapPos, label, createPointStyleSet((Map<String, String>) userData, cullState.zoom), userData);
+                return new Point(mapPos, label, createPointStyleSet((Map<String, String>) userData, zoom), userData);
             }
 
             @SuppressWarnings("unchecked")
             @Override
             public Line createLine(List<MapPos> points, Object userData) {
                 Label label = createLabel((Map<String, String>) userData);
-                return new Line(points, label, createLineStyleSet((Map<String, String>) userData, cullState.zoom), userData);
+                return new Line(points, label, createLineStyleSet((Map<String, String>) userData, zoom), userData);
             }
 
             @SuppressWarnings("unchecked")
             @Override
             public Polygon createPolygon(List<MapPos> outerRing, List<List<MapPos>> innerRings, Object userData) {
                 Label label = createLabel((Map<String, String>) userData);
-                return new Polygon(outerRing, innerRings, label, createPolygonStyleSet((Map<String, String>) userData, cullState.zoom), userData);
+                return new Polygon(outerRing, innerRings, label, createPolygonStyleSet((Map<String, String>) userData, zoom), userData);
             }
 
             @Override
             public Geometry[] createMultigeometry(List<Geometry> geomList) {
                 return geomList.toArray(new Geometry[geomList.size()]);
             }
-
         };
-
-        List<Geometry> elements = ogrHelper.loadData(envelope, geomFactory);
-        for (Geometry element : elements) {
-            element.attachToDataSource(this);
-        }
-        return elements;
+        
+        return geomFactory;
     }
 
     protected abstract Label createLabel(Map<String, String> userData);

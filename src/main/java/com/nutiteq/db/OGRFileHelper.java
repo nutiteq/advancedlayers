@@ -124,56 +124,32 @@ public class OGRFileHelper {
                 );
         }
 
-        List<com.nutiteq.geometry.Geometry> elementList = new LinkedList<com.nutiteq.geometry.Geometry>();
-
-        layer.ResetReading();
-        Feature feature = layer.GetNextFeature();
-        Geometry poSrcGeom;
+        List<com.nutiteq.geometry.Geometry> elementList = getLayerElements(layer, geomFactory, maxElements);
         
-        for (int n = 0; feature != null && n < maxElements; n++) {
-
-            poSrcGeom = feature.GetGeometryRef();
-            int eType = poSrcGeom.GetGeometryType();
-            if (eType == ogr.wkbUnknown) {
-                Log.error("unknown object type "+eType);
-                continue;
-            }
-
-            final Map<String, String> userData = new HashMap<String, String>();
-
-            for(int field=0; field<feature.GetFieldCount();field++){
-                userData.put(this.fieldNames[field], feature.GetFieldAsString(field));
-            }
-            
-            byte[] geomWkb = poSrcGeom.ExportToWkb();
-            com.nutiteq.geometry.Geometry[] geoms = WkbRead.readWkb(new ByteArrayInputStream(geomWkb), geomFactory, userData);
-            
-            // Set element ids
-            for(int i = 0; i<geoms.length; i++){
-                com.nutiteq.geometry.Geometry geom = geoms[i];
-                if(transformNeeded){
-                    if(geom instanceof com.nutiteq.geometry.Point){
-                        Point point = (Point) geom;
-                        point.setMapPos(transformPoint(point.getMapPos(), transformerToMap));
-                    }else if(geom instanceof Line){
-                        Line line = (Line) geom;
-                        line.setVertexList(transformPointList(line.getVertexList(), transformerToMap));
-                    }else if(geom instanceof Polygon){
-                        Polygon polygon = (Polygon) geom;
-                        polygon.setVertexList(transformPointList(polygon.getVertexList(), transformerToMap));
-                        polygon.setHolePolygonList(transformPointListList(polygon.getHolePolygonList(), transformerToMap));
-                    }
-                }
-                geom.setId(feature.GetFID());
-                elementList.add(geom);
-            }
-
-            feature = layer.GetNextFeature();
-        }
-
         long timeEnd = System.currentTimeMillis();
-        Log.debug("OGRFileHelper: loaded "+layer.GetName()+" N:"+ elementList.size()+" time ms:"+(timeEnd-timeStart));
+        Log.debug("OGRFileHelper: loaded " + layer.GetName() + " N:" + elementList.size() + " time ms:" + (timeEnd-timeStart));
+        
         return elementList;
+    }
+    
+    public List<com.nutiteq.geometry.Geometry> queryData(String filter) {
+        return queryData(filter, new DefaultGeometryFactory());
+    }
+    
+    public List<com.nutiteq.geometry.Geometry> queryData(String filter, GeometryFactory geomFactory) {
+        long timeStart = System.currentTimeMillis();
+
+        layer.SetSpatialFilter(null);
+        layer.SetAttributeFilter(filter);
+        
+        List<com.nutiteq.geometry.Geometry> elementList = getLayerElements(layer, geomFactory, Integer.MAX_VALUE);
+
+        layer.SetAttributeFilter(null);
+        
+        long timeEnd = System.currentTimeMillis();
+        Log.debug("OGRFileHelper: queried " + layer.GetName() + " N:" + elementList.size() + " time ms:" + (timeEnd-timeStart));
+
+        return elementList; 
     }
     
     public long insertElement(com.nutiteq.geometry.Geometry element) {
@@ -231,7 +207,57 @@ public class OGRFileHelper {
         
         layer.SyncToDisk();
     }
-    
+
+    private List<com.nutiteq.geometry.Geometry> getLayerElements(Layer layer, GeometryFactory geomFactory, int maxElements) {
+        List<com.nutiteq.geometry.Geometry> elementList = new LinkedList<com.nutiteq.geometry.Geometry>();
+
+        layer.ResetReading();
+        Feature feature = layer.GetNextFeature();
+        Geometry poSrcGeom;
+        
+        for (int n = 0; feature != null && n < maxElements; n++) {
+
+            poSrcGeom = feature.GetGeometryRef();
+            int eType = poSrcGeom.GetGeometryType();
+            if (eType == ogr.wkbUnknown) {
+                Log.error("unknown object type "+eType);
+                continue;
+            }
+
+            final Map<String, String> userData = new HashMap<String, String>();
+
+            for(int field=0; field<feature.GetFieldCount();field++){
+                userData.put(this.fieldNames[field], feature.GetFieldAsString(field));
+            }
+            
+            byte[] geomWkb = poSrcGeom.ExportToWkb();
+            com.nutiteq.geometry.Geometry[] geoms = WkbRead.readWkb(new ByteArrayInputStream(geomWkb), geomFactory, userData);
+            
+            // Set element ids
+            for(int i = 0; i<geoms.length; i++){
+                com.nutiteq.geometry.Geometry geom = geoms[i];
+                if(transformNeeded){
+                    if(geom instanceof com.nutiteq.geometry.Point){
+                        Point point = (Point) geom;
+                        point.setMapPos(transformPoint(point.getMapPos(), transformerToMap));
+                    }else if(geom instanceof Line){
+                        Line line = (Line) geom;
+                        line.setVertexList(transformPointList(line.getVertexList(), transformerToMap));
+                    }else if(geom instanceof Polygon){
+                        Polygon polygon = (Polygon) geom;
+                        polygon.setVertexList(transformPointList(polygon.getVertexList(), transformerToMap));
+                        polygon.setHolePolygonList(transformPointListList(polygon.getHolePolygonList(), transformerToMap));
+                    }
+                }
+                geom.setId(feature.GetFID());
+                elementList.add(geom);
+            }
+
+            feature = layer.GetNextFeature();
+        }
+
+        return elementList;
+    }
     
     private List<List<MapPos>> transformPointListList(
             List<List<MapPos>> posList,
