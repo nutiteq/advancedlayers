@@ -1,0 +1,55 @@
+Note: following MIT license is for Nutiteq code. The project includes several 
+3rd party libraries as optional dependencies. Depencing on used functionality
+their respective license terms may be applicable.
+
+a) Safest licenses
+* Spatialite (MPL GPL LGPL tri-license) - Spatialite Datasource
+* JavaProj  (Apache License 2.0)- custom projections
+* Proj4j (Apache License 2.0) - custom projections
+* Proj.4 (MIT license) - custom projections
+* Mapsforge (MIT license) - in Mapsforge datasource
+* GDAL/OGR (X/MIT license) - in GDAL and OGR layers
+* Graphhopper (Apache License 2.0) - in Offline routing sample
+* JMustache (BSD License) - in MapBox and MBTiles samples
+* GSON (Apache License 2.0) - in WFS Datasource
+* SLF4J logging framework (MIT-style license http://www.slf4j.org/license.html)
+* Google Protobuf (New BSD License) - in NML (3D) layers
+* Apache Xerces, HttpClient (Apache license)
+* XMLPull (public domain)
+* Org.JSON (BSD-style with no-evil clause)
+* Osmosis (public domain) - used by Graphhopper only
+* sqlite (public domain) - used for Spatialite datasource
+
+b) Be more careful with these
+* JTS (LGPL) - for OSM 3D building layer only
+* Trove (LGPL 2.1) - used by Graphhopper only
+* GEOS (LGPL) - used for Spatialite only, can be disabled
+* libiconv (LGPL) - used for Spatialite only
+
+
+c) Commercial licenses
+* Nutiteq Maps SDK - (c) Nutiteq, commercial license
+
+Nutiteq portions of the code in this project:
+
+The MIT License (MIT)
+
+Copyright (c) 2014 Nutiteq
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
