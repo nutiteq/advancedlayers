@@ -109,7 +109,7 @@ public class ClusteringVectorDataSource<T extends VectorElement> extends Abstrac
     double maxDistance = distance * Math.max(bounds.getWidth(), bounds.getHeight()) / zoomTiles;
 
     Envelope queryEnvelope = enlargeEnvelope(envelope, maxDistance * 2, bounds);
-    CullState queryCullState = new CullState(queryEnvelope, cullState.camera, cullState.renderProjection);
+    CullState queryCullState = new CullState(projection.toInternal(queryEnvelope), cullState.camera, cullState.renderProjection);
     Collection<T> data = dataSource.loadElements(queryCullState);
     
     Envelope clusterEnvelope = enlargeEnvelope(envelope, maxDistance * 1, bounds);
