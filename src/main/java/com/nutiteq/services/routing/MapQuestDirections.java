@@ -139,8 +139,14 @@ public class MapQuestDirections  {
               final RouteInstruction current = instructions[i];
               String url = iconUrls.get(current.getInstructionType());
               Bitmap bitMap = NetUtils.getBitmapFromURL(url);
+              MarkerStyle markerStyle;
               
-              MarkerStyle markerStyle = MarkerStyle.builder().setBitmap(bitMap).setSize(markerSize).build();
+              if(bitMap != null){
+                  markerStyle = MarkerStyle.builder().setBitmap(bitMap).setSize(markerSize).build();
+              }else{
+                  markerStyle = MarkerStyle.builder().setSize(markerSize).build();
+              }
+                  
               
               routePointMarkers.add(new Marker(current.getPoint(), new DefaultLabel(current.getInstructionNumber()+"."+current
                   .getInstruction(),"Distance: "+current.getDistance()+" time: "+current.getDuration(), labelStyle), markerStyle, current));
@@ -230,7 +236,9 @@ public class MapQuestDirections  {
 
     } catch (JSONException e) {
         Log.error("JSON parsing error "+e.getMessage());
-  }
+    }catch (NullPointerException e) {
+        Log.error("JSON NullPointerException error "+e.getMessage());
+    }
     
     return new Route(null, null, null, Route.ROUTE_RESULT_INTERNAL_ERROR);
 
