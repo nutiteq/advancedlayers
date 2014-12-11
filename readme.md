@@ -1,6 +1,8 @@
 # About
 
-This is a set of free and open source map layer and data source implementations in top of Nutiteq Maps SDK http://www.nutiteq.com. You can use it as a ready-made library, or modify sources according to your needs. License: MIT
+This is a set of free and open source map layer and data source implementations in top of Nutiteq Maps SDK 2.x branch http://www.nutiteq.com. You can use it as a ready-made library, or modify sources according to your needs. License: MIT
+
+NB! AdvancedLayers works only with Nutiteq SDK 2.x version branch only, and latest version from it is required. **It is NOT compatible with the newest Nutiteq SDK 3.x version.**
 
 # Getting started
 
