@@ -36,7 +36,7 @@ Into your **build.gradle**
 
     // add advancedlayers dependency:
     dependencies {
-        compile "com.nutiteq:nutiteq-3d-sdk:2.3.1"
+        compile "com.nutiteq:nutiteq-3d-sdk:2.4.0"
         compile "com.nutiteq.advancedlayers:AdvancedLayers:1.0-SNAPSHOT"
     }
 
