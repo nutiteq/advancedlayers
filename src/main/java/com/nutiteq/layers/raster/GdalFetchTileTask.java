@@ -289,12 +289,13 @@ public class GdalFetchTileTask extends FetchTileTask{
                         }
                             // TODO Handle other color schemas: RGB in one band etc. Test data needed
 
-                            if(colorType == gdalconst.GCI_AlphaBand){
-                                // replace A (first byte) of tileData int
-                                tileData[y * TILE_SIZE + x] = ((tileData[y * TILE_SIZE + x]<<8)>>8) | decoded;
-                            }else{
-                                tileData[y * TILE_SIZE + x] |= decoded | 0xFF000000;    
-                            }
+                        if (colorType == gdalconst.GCI_AlphaBand) {
+                            // replace A (first byte) of tileData int
+                            tileData[y * TILE_SIZE + x] = (tileData[y * TILE_SIZE + x] & 0x00ffffff) | decoded;
+                        } else {
+                            // set alpha=FF for the case if alphaband is missing
+                            tileData[y * TILE_SIZE + x] |= decoded | 0xFF000000;
+                        }
                             
                     }else{
                         // outside of tile bounds. Normally keep transparent, tint green just for debugging 
