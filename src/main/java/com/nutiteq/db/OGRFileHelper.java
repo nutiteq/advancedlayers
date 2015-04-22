@@ -249,8 +249,10 @@ public class OGRFileHelper {
                         polygon.setHolePolygonList(transformPointListList(polygon.getHolePolygonList(), transformerToMap));
                     }
                 }
-                geom.setId(feature.GetFID());
-                elementList.add(geom);
+                if (geom != null) {
+                    geom.setId(feature.GetFID());
+                    elementList.add(geom);
+                }
             }
 
             feature = layer.GetNextFeature();
