@@ -159,7 +159,7 @@ public class GdalFetchTileTask extends FetchTileTask{
 //        Log.debug("xy size:" + xSizeData + "x" + ySizeData);
 
         int[] tileData = new int[TILE_SIZE * TILE_SIZE];
-
+        
         for (int iBand = 0; iBand < hDataset.getRasterCount(); iBand++) {
             
         Band band = hDataset.GetRasterBand(iBand+1);
@@ -271,7 +271,7 @@ public class GdalFetchTileTask extends FetchTileTask{
                         }else{
 
                             if (colorType == gdalconst.GCI_AlphaBand){
-                                decoded = (int) val & 0xff << 24;
+                                decoded = ((int) val & 0xff) << 24;
                             }else if(colorType == gdalconst.GCI_RedBand){
                                 decoded = ((int) val & 0xff) << 16;
                             }else if (colorType == gdalconst.GCI_GreenBand){
@@ -288,9 +288,14 @@ public class GdalFetchTileTask extends FetchTileTask{
                             }
                         }
                             // TODO Handle other color schemas: RGB in one band etc. Test data needed
-                           // following forces alpha=FF for the case where alphaband is missing. Better solution needed to support dataset what really has alpha
-                            
-                            tileData[y * TILE_SIZE + x] |=  decoded | 0xFF000000;   
+
+                        if (colorType == gdalconst.GCI_AlphaBand) {
+                            // replace A (first byte) of tileData int
+                            tileData[y * TILE_SIZE + x] = (tileData[y * TILE_SIZE + x] & 0x00ffffff) | decoded;
+                        } else {
+                            // set alpha=FF for the case if alphaband is missing
+                            tileData[y * TILE_SIZE + x] |= decoded | 0xFF000000;
+                        }
                             
                     }else{
                         // outside of tile bounds. Normally keep transparent, tint green just for debugging 

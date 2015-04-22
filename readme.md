@@ -1,6 +1,11 @@
 # About
 
-This is a set of free and open source map layer and data source implementations in top of Nutiteq Maps SDK http://www.nutiteq.com. You can use it as a ready-made library, or modify sources according to your needs. License: MIT
+This is a set of free and open source map layer and data source implementations in top of Nutiteq Maps SDK 2.x branch http://www.nutiteq.com. You can use it as a ready-made library, or modify sources according to your needs. License: MIT
+
+## Nutiteq SDK version compatibility
+AdvancedLayers works only with Nutiteq SDK 2.x version branch only, and latest version from it is required. **It is NOT compatible with the newest Nutiteq SDK 3.x version.** . If you need some feature from AdvancedLayers into your app with SDK 3.0, then please post a specific request to nutiteq-dev public group (https://groups.google.com/forum/#!forum/nutiteq-dev ).
+
+Technical explanation is that Nutiteq SDK 3.0 is in cross-platform C++, so porting of services and layers for it is quite different from Java-level Android-only approach here. The good news is that most requested Advanced Layers features are already part of Nutiteq SDK 3 package (e.g. OGR vector datasource).
 
 # Getting started
 
@@ -34,7 +39,7 @@ Into your **build.gradle**
 
     // add advancedlayers dependency:
     dependencies {
-        compile "com.nutiteq:nutiteq-3d-sdk:2.3.1"
+        compile "com.nutiteq:nutiteq-3d-sdk:2.4.2"
         compile "com.nutiteq.advancedlayers:AdvancedLayers:1.0-SNAPSHOT"
     }
 
